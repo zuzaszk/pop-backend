@@ -1,4 +1,4 @@
-package main.java.com.pop.backend.config;
+package com.pop.backend.config;
 
 
 import org.springframework.beans.factory.annotation.Value;
