@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+import com.pop.backend.service.CustomOAuth2UserService;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -23,8 +25,11 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
                 .loginPage(frontendUrl + "/login")
-                // .failureUrl("/login?error")
-                // .defaultSuccessUrl(frontendUrl + "/dashboard", true)
+                .redirectionEndpoint(redirection -> redirection
+                    .baseUri("/login/oauth2/code/*"))
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(new CustomOAuth2UserService()))
+                .defaultSuccessUrl(frontendUrl + "/dashboard", true)
                 )
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
