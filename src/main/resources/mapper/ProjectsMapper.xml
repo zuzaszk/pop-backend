@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pop.backend.mapper.ProjectsMapper">
+
+    <select id="listAll" resultMap="ProjectBaseResultMap">
+        SELECT p.project_id, p.title, p.keywords, p.acronym, p.description, p.language, p.status, p.is_archived, p.created_at, p.edition_id, p.is_complete, p.year
+        FROM projects p
+        <where>
+            <if test="title != null and title != ''">
+                AND p.title ILIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="year != null">
+                AND p.year = #{year}
+            </if>
+            <if test="language != null">
+                AND p.language = #{language}
+            </if>
+        </where>
+    </select>
+
+
+
+    <select id="getBasicProjectInfoById" resultMap="ProjectWithUsersEditionAndEvaluationsResultMap">
+        SELECT
+            p.project_id, p.title, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete,
+            e.edition_id, e.name AS edition_name, e.year, e.semester, e.is_active, e.description AS edition_description,
+            u.user_id, u.first_name, u.last_name, u.email,
+            r.role_id, r.role_name,
+            ev.evaluation_id, ev.score, ev.comment, ev.state, ev.is_public, ev.created_at AS evaluation_created_at
+        FROM projects p
+                 LEFT JOIN editions e ON p.edition_id = e.edition_id
+                 LEFT JOIN user_role ur ON p.project_id = ur.project_id
+                 LEFT JOIN users u ON ur.user_id = u.user_id
+                 LEFT JOIN roles r ON ur.role_id = r.role_id
+                 LEFT JOIN evaluations ev ON p.project_id = ev.project_id
+        WHERE p.project_id = #{projectId}
+    </select>
+
+
+
+    <resultMap id="ProjectWithUsersEditionAndEvaluationsResultMap" type="com.pop.backend.entity.Projects" extends="ProjectBaseResultMap">
+        <association property="editions" resultMap="EditionBaseResultMap"/>
+        <collection property="userRole" ofType="com.pop.backend.entity.UserRole" javaType="List">
+            <association property="users" resultMap="UserBaseResultMap"/>
+            <association property="roles" resultMap="RoleBaseResultMap"/>
+        </collection>
+        <collection property="evaluations" resultMap="EvaluationBaseResultMap"/>
+    </resultMap>
+
+    <resultMap id="ProjectBaseResultMap" type="com.pop.backend.entity.Projects">
+        <id property="projectId" column="project_id"/>
+        <result property="title" column="title"/>
+        <result property="acronym" column="acronym"/>
+        <result property="description" column="description"/>
+        <result property="language" column="language"/>
+        <result property="status" column="status"/>
+        <result property="isArchived" column="is_archived"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="keywords" column="keywords"/>
+        <result property="editionId" column="edition_id"/>
+        <result property="isComplete" column="is_complete"/>
+        <result property="year" column="year"/>
+    </resultMap>
+
+
+    <resultMap id="EditionBaseResultMap" type="com.pop.backend.entity.Editions">
+        <id property="editionId" column="edition_id"/>
+        <result property="name" column="name"/>
+        <result property="year" column="year"/>
+        <result property="semester" column="semester"/>
+        <result property="isActive" column="is_active"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <resultMap id="UserBaseResultMap" type="com.pop.backend.entity.Users">
+        <id property="userId" column="user_id"/>
+        <result property="firstName" column="first_name"/>
+        <result property="lastName" column="last_name"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <resultMap id="RoleBaseResultMap" type="com.pop.backend.entity.Roles">
+        <id property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+    </resultMap>
+
+    <resultMap id="ElementBaseResultMap" type="com.pop.backend.entity.ProjectElements">
+        <id property="elementId" column="element_id"/>
+        <result property="filePath" column="v_file_path"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+    <resultMap id="EvaluationBaseResultMap" type="com.pop.backend.entity.Evaluations">
+        <id property="evaluationId" column="evaluation_id"/>
+        <result property="score" column="score"/>
+        <result property="comment" column="comment"/>
+        <result property="state" column="state"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+</mapper>
