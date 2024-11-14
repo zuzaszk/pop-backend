@@ -6,13 +6,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import com.pop.backend.service.CustomOAuth2UserService;
+import com.pop.backend.oauth.CustomOAuth2UserService;
+
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final CustomOAuth2UserService customOAuth2UserService;
+
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
 
     @Value("${frontend_url}")
     private String frontendUrl;
@@ -28,7 +35,7 @@ public class SecurityConfig {
                 .redirectionEndpoint(redirection -> redirection
                     .baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo
-                    .userService(new CustomOAuth2UserService()))
+                    .userService(customOAuth2UserService))
                 .defaultSuccessUrl(frontendUrl + "/dashboard", true)
                 )
             .logout(logout -> logout
