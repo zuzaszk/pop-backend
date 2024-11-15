@@ -7,13 +7,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 
 
 @Data
 @TableName("roles")
-public class Roles {
+public class Roles implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
