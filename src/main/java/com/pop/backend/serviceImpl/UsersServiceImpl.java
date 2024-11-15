@@ -33,5 +33,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public List<Users> listAll() {
         return usersMapper.selectList(null);
     }
+
+    @Override
+    public Integer findMaxUserId() {
+        return usersMapper.findMaxUserId();
+    }
     
 }

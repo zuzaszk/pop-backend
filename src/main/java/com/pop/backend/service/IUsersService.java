@@ -10,6 +10,8 @@ public interface IUsersService extends IService<Users> {
 
     Optional<Users> findByEmail(String email);
 
+    Integer findMaxUserId();
+
     void registerOAuthUser(Users user);
 
     List<Users> listAll();

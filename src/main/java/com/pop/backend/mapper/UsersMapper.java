@@ -10,5 +10,8 @@ import com.pop.backend.entity.Users;
 
 @Repository
 public interface UsersMapper extends BaseMapper<Users> {
+    
     Optional<Users> findByEmail(@Param("email") String email);
+    
+    Integer findMaxUserId();
 }

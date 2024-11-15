@@ -41,7 +41,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             newUser.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
 
-            userService.registerOAuthUser(newUser);
+            try {
+                userService.registerOAuthUser(newUser);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Integer maxUserId = userService.findMaxUserId();
+                newUser.setUserId(maxUserId + 1);
+                userService.registerOAuthUser(newUser);
+            }
         }
 
         return oAuth2User;
