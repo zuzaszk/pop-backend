@@ -14,4 +14,9 @@
         WHERE email = #{email}
     </select>
 
+    <select id="findMaxUserId" resultType="int">
+        SELECT COALESCE(MAX(user_id), 0) FROM users
+    </select>
+
+
 </mapper>
