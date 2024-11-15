@@ -25,7 +25,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Transactional
     @Override
-    public void registerOAuthUser(Users user) {
+    public void registerUser(Users user) {
         usersMapper.insert(user);
     }
 
