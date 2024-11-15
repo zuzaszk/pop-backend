@@ -1,16 +1,25 @@
 package com.pop.backend.controller;
-
-import java.util.List;
-
+import com.pop.backend.entity.ProjectElements;
+import com.pop.backend.entity.Projects;
+import com.pop.backend.entity.Users;
+import com.pop.backend.service.IProjectsService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.pop.backend.entity.Projects;
-import com.pop.backend.service.IProjectsService;
+/**
+ * <p>
+ *  Project Controller
+ * </p>
+ *
+ * @author yl
+ * @since 2024-10-22
+ */
+
 
 @RestController
 @RequestMapping("/project")
@@ -20,6 +29,10 @@ public class ProjectsController {
     IProjectsService projectsService;
 
     @GetMapping("/listAll")
+    @Operation(
+            summary = "List all projects with their title, arc and description",
+            description = "Author: YL"
+    )
     public ResponseEntity<List<Projects>> listAll(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer year,
@@ -30,10 +43,50 @@ public class ProjectsController {
 
 
     @GetMapping("/basicInfo")
+    @Operation(
+            summary = "Get project information, and everything related to this project",
+            description = "Author: YL"
+    )
     public ResponseEntity<Projects> getBasicProjectInfoById(
             @RequestParam Integer projectId) {
         Projects project = projectsService.getBasicProjectInfoById(projectId);
         return ResponseEntity.ok(project);
     }
+
+    /**
+     * Chairs to create project
+     * @param title
+     * @param editionId
+     * @return
+     */
+    @PostMapping("/create")
+    @Operation(
+            summary = "Chair initially create project",
+            description = "Author: YL"
+    )
+    public ResponseEntity<String> createProject(
+                @RequestParam("title") String title,
+            @RequestParam("editionId") Integer editionId) {
+
+        projectsService.createProject(title, editionId);
+        return ResponseEntity.ok("Project created successfully.");
+    }
+
+
+    @PutMapping ("/saveBasicInfo")
+    @Operation(
+            summary = "Student fill info about the project",
+            description = "Author: YL"
+    )
+    public ResponseEntity<Integer> saveBasicInfo(@RequestBody Projects projects) {
+        Integer projectId = projectsService.saveBasicInfo(projects);
+        return ResponseEntity.ok(projectId);
+    }
+
+
+
+
+
+
 
 }

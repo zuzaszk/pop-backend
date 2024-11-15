@@ -19,4 +19,13 @@ public interface ProjectsMapper extends BaseMapper<Projects> {
 
     Projects getBasicProjectInfoById(@Param("projectId") Integer projectId);
 
+    Projects getProjectWithUsersAndEditionById(Integer projectId);
+
+
+    List<Projects> getProjectsAssignedToUser(
+            @Param("userId") Integer userId,
+            @Param("roleId") Integer roleId,
+            @Param("editionId") Integer editionId);
+
+
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pop.backend.mapper.EvaluationsMapper">
+
+    <select id="getEvaluationsByProjectId" resultMap="EvaluationBaseResultMap">
+        SELECT
+            evaluation_id, project_id, score, comment, state, is_public, created_at
+        FROM evaluations
+        WHERE project_id = #{projectId}
+    </select>
+
+    <resultMap id="EvaluationBaseResultMap" type="com.pop.backend.entity.Evaluations">
+        <id property="evaluationId" column="evaluation_id"/>
+        <result property="score" column="score"/>
+        <result property="comment" column="comment"/>
+        <result property="state" column="state"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+</mapper>

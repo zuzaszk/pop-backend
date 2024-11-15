@@ -11,4 +11,8 @@ public interface IProjectsService extends IService<Projects> {
 
     Projects getBasicProjectInfoById(Integer projectId);
 
+    void createProject(String title, Integer editionId);
+
+    Integer saveBasicInfo(Projects projects);
+
 }
