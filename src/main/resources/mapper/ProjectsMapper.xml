@@ -20,31 +20,41 @@
 
 
 
-    <select id="getBasicProjectInfoById" resultMap="ProjectWithUsersEditionAndEvaluationsResultMap">
+    <select id="getProjectWithUsersAndEditionById" resultMap="ProjectWithUsersAndEditionResultMap">
         SELECT
-            p.project_id, p.title, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete,
+            p.project_id, p.title, p.acronym, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete,
             e.edition_id, e.name AS edition_name, e.year, e.semester, e.is_active, e.description AS edition_description,
             u.user_id, u.first_name, u.last_name, u.email,
-            r.role_id, r.role_name,
-            ev.evaluation_id, ev.score, ev.comment, ev.state, ev.is_public, ev.created_at AS evaluation_created_at
+            r.role_id, r.role_name
         FROM projects p
                  LEFT JOIN editions e ON p.edition_id = e.edition_id
                  LEFT JOIN user_role ur ON p.project_id = ur.project_id
                  LEFT JOIN users u ON ur.user_id = u.user_id
                  LEFT JOIN roles r ON ur.role_id = r.role_id
-                 LEFT JOIN evaluations ev ON p.project_id = ev.project_id
         WHERE p.project_id = #{projectId}
     </select>
 
 
+    <select id="getProjectsAssignedToUser" resultMap="ProjectBaseResultMap">
+        SELECT p.project_id, p.title, p.acronym, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete, p.edition_id
+        FROM projects p
+        INNER JOIN evaluations e ON p.project_id = e.project_id
+        INNER JOIN editions ed ON p.edition_id = ed.edition_id
+        WHERE e.user_id = #{userId} AND e.role_id = #{roleId}
+        <if test="editionId != null">
+            AND p.edition_id = #{editionId}
+        </if>
+    </select>
 
-    <resultMap id="ProjectWithUsersEditionAndEvaluationsResultMap" type="com.pop.backend.entity.Projects" extends="ProjectBaseResultMap">
+
+
+
+    <resultMap id="ProjectWithUsersAndEditionResultMap" type="com.pop.backend.entity.Projects" extends="ProjectBaseResultMap">
         <association property="editions" resultMap="EditionBaseResultMap"/>
         <collection property="userRole" ofType="com.pop.backend.entity.UserRole" javaType="List">
             <association property="users" resultMap="UserBaseResultMap"/>
             <association property="roles" resultMap="RoleBaseResultMap"/>
         </collection>
-        <collection property="evaluations" resultMap="EvaluationBaseResultMap"/>
     </resultMap>
 
     <resultMap id="ProjectBaseResultMap" type="com.pop.backend.entity.Projects">
@@ -100,5 +110,9 @@
         <result property="isPublic" column="is_public"/>
         <result property="createdAt" column="created_at"/>
     </resultMap>
+
+
+
+
 
 </mapper>
