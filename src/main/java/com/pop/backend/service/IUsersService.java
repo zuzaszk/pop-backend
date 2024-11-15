@@ -12,7 +12,7 @@ public interface IUsersService extends IService<Users> {
 
     Integer findMaxUserId();
 
-    void registerOAuthUser(Users user);
+    void registerUser(Users user);
 
     List<Users> listAll();
 }

@@ -5,10 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-import com.pop.backend.oauth.CustomOAuth2UserService;
+import com.pop.backend.auth.CustomOAuth2UserService;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
@@ -28,7 +32,9 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/", "/login").permitAll()
+                .requestMatchers(
+                    "/", "/auth/**", "/login")
+                    .permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
                 .loginPage(frontendUrl + "/login")
@@ -38,10 +44,20 @@ public class SecurityConfig {
                     .userService(customOAuth2UserService))
                 .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
                 )
+            // .csrf(c -> c
+            //     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            // )
+            .csrf(csrf -> csrf.disable())
+            // .sessionManagement(session -> session
+            //     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
                 .permitAll());
         return http.build();
     }
 
+    @Bean
+    BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
