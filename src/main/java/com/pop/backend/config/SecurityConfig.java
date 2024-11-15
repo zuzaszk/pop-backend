@@ -36,7 +36,7 @@ public class SecurityConfig {
                     .baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService))
-                .defaultSuccessUrl(frontendUrl + "/dashboard", true)
+                .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
                 )
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
