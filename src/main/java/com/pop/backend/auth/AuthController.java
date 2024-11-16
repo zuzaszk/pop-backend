@@ -120,7 +120,7 @@ public class AuthController {
 
             Users user = userOptional.get();
             String token = tokenService.generateResetToken(user);
-            String resetLink = frontendUrl + "/reset-password?token=" + token;
+            String resetLink = frontendUrl + "/#/reset-password?token=" + token;
             
             emailService.sendEmail(request.getEmail(), "Password Reset Link", resetLink);
             
