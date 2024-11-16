@@ -155,6 +155,5 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new AuthResponse("Invalid or expired token", null));
         }
     }
-
 }
 

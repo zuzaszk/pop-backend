@@ -17,4 +17,6 @@ public interface IUsersService extends IService<Users> {
     void updateUser(Users user);
 
     List<Users> listAll();
+
+    Users getBasicUserInfoById(Integer userId);
 }
