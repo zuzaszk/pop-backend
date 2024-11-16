@@ -14,4 +14,6 @@ public interface UsersMapper extends BaseMapper<Users> {
     Optional<Users> findByEmail(@Param("email") String email);
     
     Integer findMaxUserId();
+
+    Users getBasicUserInfoById(@Param ("userId") Integer userId);
 }

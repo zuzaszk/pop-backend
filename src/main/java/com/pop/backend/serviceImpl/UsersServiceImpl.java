@@ -43,5 +43,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public void updateUser(Users user) {
         usersMapper.updateById(user);
     }
+
+    @Override
+    public Users getBasicUserInfoById(Integer userId) {
+        Users user = usersMapper.getBasicUserInfoById(userId);
+        return user;
+    }
     
 }
