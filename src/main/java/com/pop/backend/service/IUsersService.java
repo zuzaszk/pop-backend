@@ -14,5 +14,7 @@ public interface IUsersService extends IService<Users> {
 
     void registerUser(Users user);
 
+    void updateUser(Users user);
+
     List<Users> listAll();
 }

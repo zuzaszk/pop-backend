@@ -38,5 +38,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public Integer findMaxUserId() {
         return usersMapper.findMaxUserId();
     }
+
+    @Override
+    public void updateUser(Users user) {
+        usersMapper.updateById(user);
+    }
     
 }
