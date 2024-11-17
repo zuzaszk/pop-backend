@@ -22,7 +22,7 @@ public class UsersController {
     IUsersService usersService;
 
     @GetMapping("/listAll")
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<List<Users>> listAll() {
         List<Users> users = usersService.listAll();
         return ResponseEntity.ok(users);
