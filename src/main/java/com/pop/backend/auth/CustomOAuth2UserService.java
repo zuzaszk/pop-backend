@@ -2,8 +2,10 @@ package com.pop.backend.auth;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.pop.backend.security.CustomOAuth2User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -32,8 +34,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String firstName = oAuth2User.getAttribute("given_name");
         String lastName = oAuth2User.getAttribute("family_name");
+        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // e.g., "google"
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        Optional<Users> existingUser = userService.findByEmail(email);
+        Optional<Users> existingUser = userService.findByEmailWithRole(email);
         if (existingUser.isEmpty()) {
             Users newUser = new Users();
             newUser.setEmail(email);
@@ -62,7 +66,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
 
-        return oAuth2User;
+        // Process the attributes and map to a custom user entity
+        CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, existingUser.orElse(null));
+        
+        return customUser;
     }
-    
+
+    private CustomOAuth2User processOAuth2User(String registrationId,
+                                               Map<String, Object> attributes,
+                                               Users user) {
+        // Map provider-specific user info to a custom user object
+        String email = (String) attributes.get("email");
+        String name = (String) attributes.get("name");
+
+        // Return a custom user object
+        return new CustomOAuth2User(attributes, email, name, user.getUserRole());
+    }
+
 }
