@@ -24,4 +24,8 @@ public interface IUsersService extends IService<Users> {
     List<Users> listAll();
 
     Users getBasicUserInfoById(Integer userId);
+
+    void setCurrentRoleForUser(Integer userId, Integer roleId);
+
+    Integer getCurrentRoleForUser(Integer userId);
 }
