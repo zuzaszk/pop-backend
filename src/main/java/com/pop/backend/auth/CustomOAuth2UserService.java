@@ -1,21 +1,24 @@
-package com.pop.backend.oauth;
+package com.pop.backend.auth;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-
+    @Autowired
     private final IUsersService userService;
 
     public CustomOAuth2UserService(IUsersService userService) {
@@ -33,7 +36,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<Users> existingUser = userService.findByEmail(email);
         if (existingUser.isEmpty()) {
             Users newUser = new Users();
-            // newUser.setUserId(10000000);
             newUser.setEmail(email);
             newUser.setName(lastName + " " + firstName);
             newUser.setFirstName(firstName);
@@ -42,12 +44,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
 
             try {
-                userService.registerOAuthUser(newUser);
+                userService.registerUser(newUser);
             } catch (Exception e) {
                 e.printStackTrace();
                 Integer maxUserId = userService.findMaxUserId();
                 newUser.setUserId(maxUserId + 1);
-                userService.registerOAuthUser(newUser);
+                userService.registerUser(newUser);
+            } finally {
+                UserRole userRole = new UserRole();
+                userRole.setUserId(newUser.getUserId());
+                userRole.setRoleId(5);
+                userService.insertUserRole(userRole);
+                List<UserRole> roles = userService.findUserRoles(newUser.getUserId());
+                System.out.println("User roles: " + roles);
+                newUser.setUserRole(roles);
+                userService.updateUser(newUser);
             }
         }
 
