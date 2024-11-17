@@ -34,7 +34,7 @@ public class ProjectsController {
             summary = "List all projects with their title, arc and description",
             description = "Author: YL"
     )
-//    @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
+
     public ResponseEntity<List<Projects>> listAll(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer year,
