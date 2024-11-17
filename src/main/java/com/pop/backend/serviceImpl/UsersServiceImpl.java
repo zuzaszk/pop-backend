@@ -1,6 +1,8 @@
 package com.pop.backend.serviceImpl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Autowired
     private UserRoleMapper userRoleMapper;
+
+     private final Map<Integer, Integer> currentRoleMap = new HashMap<>();
     
     @Override
     public Optional<Users> findByEmail(String email) {
@@ -36,7 +40,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Override
     public List<Users> listAll() {
-        return usersMapper.selectList(null);
+        // return usersMapper.selectList(null);
+        return usersMapper.listAllWithRoles();
     }
 
     @Override
@@ -70,6 +75,16 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public Users getBasicUserInfoById(Integer userId) {
         Users user = usersMapper.getBasicUserInfoById(userId);
         return user;
+    }
+
+    @Override
+    public void setCurrentRoleForUser(Integer userId, Integer roleId) {
+        currentRoleMap.put(userId, roleId);
+    }
+
+    @Override
+    public Integer getCurrentRoleForUser(Integer userId) {
+        return currentRoleMap.get(userId);
     }
 
 

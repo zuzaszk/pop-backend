@@ -1,5 +1,6 @@
 package com.pop.backend.mapper;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.ibatis.annotations.Param;
@@ -16,4 +17,6 @@ public interface UsersMapper extends BaseMapper<Users> {
     Integer findMaxUserId();
 
     Users getBasicUserInfoById(@Param ("userId") Integer userId);
+
+    List<Users> listAllWithRoles();
 }
