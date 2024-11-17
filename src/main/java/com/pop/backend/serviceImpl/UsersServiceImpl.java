@@ -23,6 +23,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         return Optional.ofNullable(usersMapper.findByEmail(email).orElse(null));
     }
 
+    @Override
+    public Optional<Users> findByEmailWithRole(String email) {
+        return Optional.ofNullable(usersMapper.findByEmailWithRole(email).orElse(null));
+    }
+
     @Transactional
     @Override
     public void registerOAuthUser(Users user) {
