@@ -1,22 +1,22 @@
 package com.pop.backend.auth;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IUsersService;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -62,6 +62,7 @@ public class AuthController {
             newUser.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             newUser.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
 
+        
             try {
                 usersService.registerUser(newUser);
             } catch (Exception e) {
@@ -70,6 +71,15 @@ public class AuthController {
                 newUser.setUserId(maxUserId + 1);
                 usersService.registerUser(newUser);
                 System.out.println("User registered successfully!");
+            } finally {
+                UserRole userRole = new UserRole();
+                userRole.setUserId(newUser.getUserId());
+                userRole.setRoleId(5);
+                usersService.insertUserRole(userRole);
+                List<UserRole> roles = usersService.findUserRoles(newUser.getUserId());
+                System.out.println("User roles: " + roles);
+                newUser.setUserRole(roles);
+                usersService.updateUser(newUser);
             }
 
             // return ResponseEntity.ok("User registered successfully!");
