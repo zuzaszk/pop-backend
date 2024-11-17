@@ -34,7 +34,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String firstName = oAuth2User.getAttribute("given_name");
         String lastName = oAuth2User.getAttribute("family_name");
-        String registrationId = userRequest.getClientRegistration().getRegistrationId(); // e.g., "google"
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         Optional<Users> existingUser = userService.findByEmailWithRole(email);
@@ -75,11 +75,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private CustomOAuth2User processOAuth2User(String registrationId,
                                                Map<String, Object> attributes,
                                                Users user) {
-        // Map provider-specific user info to a custom user object
         String email = (String) attributes.get("email");
         String name = (String) attributes.get("name");
-
-        // Return a custom user object
         return new CustomOAuth2User(attributes, email, name, user.getUserRole());
     }
 

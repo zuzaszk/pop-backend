@@ -1,14 +1,12 @@
 package com.pop.backend.security;
 
 import com.pop.backend.entity.UserRole;
-import com.pop.backend.entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CustomOAuth2User implements OAuth2User {

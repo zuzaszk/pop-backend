@@ -15,7 +15,7 @@
     </select>
 
     <resultMap id="userWithRolesMap" type="com.pop.backend.entity.Users">
-        <!-- Map User fields -->
+        <!-- User fields -->
         <id property="userId" column="user_id"/>
         <result property="email" column="email"/>
         <result property="name" column="name"/>
@@ -23,13 +23,13 @@
         <result property="lastName" column="last_name"/>
         <result property="password" column="password"/>
 
-        <!-- Map UserRoles collection -->
+        <!-- UserRoles collection -->
         <collection property="userRole" ofType="com.pop.backend.entity.UserRole">
             <id property="userRoleId" column="user_role_id"/>
             <result property="roleId" column="role_id"/>
             <result property="userId" column="user_id"/>
 
-            <!-- Map Role inside UserRole -->
+            <!-- Role inside UserRole -->
             <association property="roles" javaType="com.pop.backend.entity.Roles">
                 <id property="roleId" column="role_id"/>
                 <result property="roleName" column="role_name"/>
