@@ -12,7 +12,7 @@ import java.util.Optional;
 public class UsersServiceTest {
 
     @Autowired
-    private UsersServiceImpl usersService; // The service that calls the method
+    private UsersServiceImpl usersService;
 
     @Test
     public void testFindByEmail() {
