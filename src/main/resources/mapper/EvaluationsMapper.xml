@@ -9,6 +9,39 @@
         WHERE project_id = #{projectId}
     </select>
 
+    <select id="getExistingScore" resultMap="EvaluationBaseResultMap">
+        SELECT
+            *
+        FROM evaluations
+        WHERE project_id = #{projectId} AND user_id = #{userId} AND role_id = #{roleId} AND score IS NOT NULL LIMIT 1
+    </select>
+
+
+    <select id="hasUserAlreadyEvaluated" resultMap="EvaluationBaseResultMap">
+        SELECT
+            *
+        FROM evaluations
+        WHERE project_id = #{projectId} AND user_id = #{userId} LIMIT 1
+    </select>
+
+
+    <select id="getEvaluationByUserProjectEvaluationRole" resultMap="EvaluationBaseResultMap">
+        SELECT
+            evaluation_id,
+            score,
+            comment,
+            state,
+            is_public,
+            created_at
+        FROM evaluations
+        WHERE project_id = #{projectId}
+          AND user_id = #{userId}
+          AND evaluation_role_id = #{evaluationRoleId}
+    </select>
+
+
+
+
     <resultMap id="EvaluationBaseResultMap" type="com.pop.backend.entity.Evaluations">
         <id property="evaluationId" column="evaluation_id"/>
         <result property="score" column="score"/>
@@ -16,6 +49,8 @@
         <result property="state" column="state"/>
         <result property="isPublic" column="is_public"/>
         <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="evaluationRoleId" column="evaluation_role_id"/>
     </resultMap>
 
 </mapper>
