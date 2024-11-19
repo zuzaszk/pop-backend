@@ -19,4 +19,14 @@
     </select>
 
 
+    <select id="countUsersByRole" resultType="int">
+        SELECT COUNT(*)
+        FROM users u
+        <if test="roleId != null">
+            JOIN user_role ur ON u.user_id = ur.user_id
+            WHERE ur.role_id = #{roleId}
+        </if>
+    </select>
+
+
 </mapper>

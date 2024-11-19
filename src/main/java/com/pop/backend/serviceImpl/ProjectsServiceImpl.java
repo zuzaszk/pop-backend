@@ -1,8 +1,17 @@
 package com.pop.backend.serviceImpl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.pop.backend.config.EvaluationWeightsConfig;
+import com.pop.backend.entity.ProjectElements;
+import com.pop.backend.entity.Reviews;
+import com.pop.backend.enums.EvaluationRole;
+import com.pop.backend.mapper.ProjectElementsMapper;
+import com.pop.backend.mapper.ReviewsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +33,15 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
     @Autowired
     private AuditLogsServiceImpl auditLogService;
 
+
     @Autowired
-    private EvaluationsMapper evaluationsMapper;
+    private ReviewsMapper reviewsMapper;
+
+    @Autowired
+    private ProjectElementsMapper projectElementsMapper;
+
+    @Autowired
+    private EvaluationWeightsConfig evaluationWeightsConfig;
 
 
 
@@ -40,8 +56,11 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
         // Retrieve project details with users and edition info
         Projects project = projectsMapper.getProjectWithUsersAndEditionById(projectId);
 
-        List<Evaluations> evaluations = evaluationsMapper.getEvaluationsByProjectId(projectId);
-        project.setEvaluations(evaluations);
+        List<Reviews> reviews = reviewsMapper.getReviewsByProjectId(projectId);
+        project.setReviews(reviews);
+
+        List<ProjectElements> projectElements = projectElementsMapper.getElementsByProjectId(projectId);
+        project.setElements(projectElements);
 
         return project;
     }
@@ -70,12 +89,13 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
 
     @Override
     public Integer saveBasicInfo(Projects projects) {
-        Projects newProject = projectsMapper.getBasicProjectInfoById(projects.getProjectId());
+        Projects newProject = projectsMapper.selectById(projects.getProjectId());
         newProject.setAcronym(projects.getAcronym());
         newProject.setDescription(projects.getDescription());
         newProject.setLanguage(projects.getLanguage());
         newProject.setKeywords(projects.getKeywords());
         newProject.setEditionId(projects.getEditionId());
+        newProject.setOverview(projects.getOverview());
         newProject.setCreatedAt(LocalDateTime.now());
         newProject.setIsArchived(false);
         newProject.setIsComplete(false);
@@ -83,5 +103,59 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
         projectsMapper.updateById(newProject);
         return newProject.getProjectId();
     }
+
+
+
+    @Override
+    public List<Map<String, Object>> getTopTechnologies(Integer editionId) {
+        return projectsMapper.getTopTechnologies(editionId);
+    }
+
+
+
+
+    @Override
+    public List<Map<String, Object>> listProjectEvaluationDetails(Integer editionId) {
+        List<Map<String, Object>> stats = projectsMapper.listProjectEvaluationDetails(editionId);
+
+        // Convert weights from configuration
+        Map<Integer, Double> weights = new HashMap<>();
+        for (EvaluationRole role : EvaluationRole.values()) {
+            weights.put(role.getId(), evaluationWeightsConfig.getWeights().getOrDefault(role.name(), 0.0));
+        }
+
+        // Organize data by project
+        Map<Integer, Map<String, Object>> projectData = new HashMap<>();
+        for (Map<String, Object> record : stats) {
+            Integer projectId = (Integer) record.get("projectId");
+            String projectName = (String) record.get("projectName");
+            Integer evaluationRoleId = (Integer) record.get("evaluationRoleId");
+            Long evaluationCount = (Long) record.get("evaluationCount");
+            Double averageScore = record.get("averageScore") != null ? ((Number) record.get("averageScore")).doubleValue() : 0.0;
+
+            // Prepare project data
+            projectData.putIfAbsent(projectId, new HashMap<>());
+            Map<String, Object> project = projectData.get(projectId);
+            project.put("projectId", projectId);
+            project.put("projectName", projectName);
+
+            // Collect evaluation data
+            List<Map<String, Object>> evaluations = (List<Map<String, Object>>) project.computeIfAbsent("evaluations", k -> new ArrayList<>());
+            evaluations.add(Map.of(
+                    "evaluationRole", EvaluationRole.getRoleNameById(evaluationRoleId),
+                    "evaluationCount", evaluationCount,
+                    "averageScore", averageScore
+            ));
+
+            // Calculate the final weighted score
+            Double weight = weights.getOrDefault(evaluationRoleId, 0.0);
+            project.put("finalWeightedScore", ((Double) project.getOrDefault("finalWeightedScore", 0.0)) + averageScore * weight);
+        }
+
+        return new ArrayList<>(projectData.values());
+    }
+
+
+
 
 }

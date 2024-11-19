@@ -31,7 +31,7 @@ public class Comments implements Serializable {
     private Boolean isPublic;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     // Relationships
     @TableField(exist = false)

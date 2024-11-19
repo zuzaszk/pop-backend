@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pop.backend.mapper.ReviewsMapper">
+
+
+    <select id="getReviewsByProjectId" resultMap="ReviewBaseResultMap">
+        SELECT
+            *
+        FROM reviews
+        WHERE project_id = #{projectId}
+    </select>
+
+
+    <select id="countReviewsByEdition" resultType="int">
+        SELECT COUNT(*)
+        FROM reviews r
+        <if test="editionId != null">
+            JOIN projects p ON r.project_id = p.project_id
+            WHERE p.edition_id = #{editionId}
+        </if>
+    </select>
+
+
+
+
+
+
+
+    <resultMap id="ReviewBaseResultMap" type="com.pop.backend.entity.Reviews">
+        <id property="reviewId" column="review_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="review" column="review"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pop.backend.mapper.UserRoleMapper">
+
+    <select id="getUserRelatedToProject" resultMap="UserRoleResultMap">
+        SELECT
+            ur.user_role_id,
+            ur.project_id,
+            ur.role_id,
+            ur.user_id,
+            u.first_name AS user_first_name,
+            u.last_name AS user_last_name,
+            u.email AS user_email,
+            r.role_name
+        FROM user_role ur
+                 LEFT JOIN users u ON ur.user_id = u.user_id
+                 LEFT JOIN roles r ON ur.role_id = r.role_id
+        WHERE ur.project_id = #{projectId}
+    </select>
+
+
+    <select id="getUserRoleForProject" resultMap="UserRoleBaseResultMap">
+        SELECT *
+        FROM user_role
+        WHERE project_id = #{projectId} AND user_id = #{userId} AND role_id = #{roleId}
+    </select>
+
+
+    <select id="isTeachingMember" resultMap="UserRoleBaseResultMap">
+        SELECT *
+        FROM user_role
+        WHERE user_id = #{userId}
+          AND role_id IN (2, 3) -- Only Supervisor (2) or Reviewer (3)
+            LIMIT 1
+    </select>
+
+
+
+
+    <resultMap id="UserRoleBaseResultMap" type="com.pop.backend.entity.UserRole">
+        <id property="userRoleId" column="user_role_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="editionId" column="edition_id"/>
+    </resultMap>
+
+
+    <resultMap id="UserRoleResultMap" type="com.pop.backend.entity.UserRole">
+        <id property="userRoleId" column="user_role_id"/>
+        <result property="projectId" column="project_id"/>
+        <association property="users" javaType="com.pop.backend.entity.Users">
+            <id property="userId" column="user_id"/>
+            <result property="firstName" column="user_first_name"/>
+            <result property="lastName" column="user_last_name"/>
+            <result property="email" column="user_email"/>
+        </association>
+        <association property="roles" javaType="com.pop.backend.entity.Roles">
+            <id property="roleId" column="role_id"/>
+            <result property="roleName" column="role_name"/>
+        </association>
+    </resultMap>
+
+
+
+
+</mapper>

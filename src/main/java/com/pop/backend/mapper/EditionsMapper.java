@@ -4,9 +4,11 @@ import com.pop.backend.entity.Editions;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
- *  Mapper 接口
  * </p>
  *
  * @author yl
@@ -15,5 +17,7 @@ import org.apache.ibatis.annotations.Param;
 public interface EditionsMapper extends BaseMapper<Editions> {
 
     Integer getEditionIdByProjectId(@Param("projectId") Integer projectId);
+
+    List<Map<String, Object>> getAverageGradesForLastEditions(@Param("n") int n);
 
 }

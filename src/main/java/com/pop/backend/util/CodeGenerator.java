@@ -31,15 +31,15 @@ public class CodeGenerator {
 
                 }))
                 .packageConfig(builder -> {
-                    builder.parent("edu.pwr") // 设置父包名
-                            .moduleName("zpi") // 设置父包模块名
+                    builder.parent("com.pop") // 设置父包名
+                            .moduleName("backend") // 设置父包模块名
                             //默认：实体类放到entity包; mapper接口放到 mapper包，service接口放到 service包下
                             // service接口实现类 service/impl 目录下;contorller控制器类放在controller包下
                             .serviceImpl("serviceImpl") //自定义 service接口实现类 存放在哪个包下
                             .pathInfo(Collections.singletonMap(OutputFile.xml, System.getProperty("user.dir")+"/src/main/resources/mapper")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("evaluations"); // 设置需要生成的表名
+                    builder.addInclude("comments"); // 设置需要生成的表名
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .execute();

@@ -1,9 +1,11 @@
 package com.pop.backend.service;
 
+import com.pop.backend.common.ApiResponse;
 import com.pop.backend.entity.Evaluations;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pop.backend.entity.Projects;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -15,8 +17,15 @@ import java.util.List;
  */
 public interface IEvaluationsService extends IService<Evaluations> {
 
-    List<Projects> getProjectsAssignedToUser(Integer userId, Integer roleId, Integer editionId);
+    List<Projects> getProjectsAssignedToUser(Integer userId, Integer evaluationRoleId, Integer editionId);
 
-    void addEvaluation(Evaluations evaluation);
+    ApiResponse<String> addEvaluation(Evaluations evaluation);
+
+    Evaluations getEvaluationByUserProjectEvaluationRole(Integer projectId, Integer userId, Integer evaluationRoleId);
+
+
+    ApiResponse<String> updateEvaluation(Evaluations evaluation);
+
+
 
 }
