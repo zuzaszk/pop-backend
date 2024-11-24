@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pop.backend.mapper.UserRoleMapper">
+
+    <select id="insertUserRole" parameterType="com.pop.backend.entity.UserRole">
+        INSERT INTO user_role (user_id, role_id, project_id, edition_id)
+        VALUES (#{userId}, #{roleId}, #{projectId}, #{editionId})
+    </select>
+
+    <select id="deleteUserRole" parameterType="com.pop.backend.entity.UserRole">
+        DELETE FROM user_role
+        WHERE user_id = #{userId} AND role_id = #{roleId} AND project_id = #{projectId}
+    </select>
+
+    <select id="findRolesByUserId" parameterType="com.pop.backend.entity.UserRole">
+        SELECT *
+        FROM user_role ur
+        WHERE ur.user_id = #{userId}
+    </select>
+
+    <select id="findMaxUserRoleId" resultType="int">
+        SELECT COALESCE(MAX(user_role_id), 0) FROM user_role
+    </select>
+
+    <!-- <select id="listAll" resultMap="UserRoleBaseResultMap">
+        SELECT ur.user_id, ur.project_id, ur.role_id
+        FROM user_role ur
+    </select>
+
+    <resultMap id="UserRoleBaseResultMap" type="com.pop.backend.entity.UserRole">
+        <id property="userId" column="user_id"/>
+        <id property="projectId" column="project_id"/>
+        <id property="roleId" column="role_id"/>
+    </resultMap> -->
+
+</mapper>
