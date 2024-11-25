@@ -5,13 +5,40 @@
 
 <mapper namespace="com.pop.backend.mapper.UsersMapper">
 
-    <!-- <select id="listAll" resultType="com.pop.backend.entity.Users">
-        SELECT * FROM users
-    </select> -->
-
     <select id="findByEmail" resultType="com.pop.backend.entity.Users">
         SELECT * FROM users
         WHERE email = #{email}
+    </select>
+
+    <resultMap id="userWithRolesMap" type="com.pop.backend.entity.Users">
+        <!-- User fields -->
+        <id property="userId" column="user_id"/>
+        <result property="email" column="email"/>
+        <result property="name" column="name"/>
+        <result property="firstName" column="first_name"/>
+        <result property="lastName" column="last_name"/>
+        <result property="password" column="password"/>
+
+        <!-- UserRoles collection -->
+        <collection property="userRole" ofType="com.pop.backend.entity.UserRole">
+            <id property="userRoleId" column="user_role_id"/>
+            <result property="roleId" column="role_id"/>
+            <result property="userId" column="user_id"/>
+
+            <!-- Role inside UserRole -->
+            <association property="roles" javaType="com.pop.backend.entity.Roles">
+                <id property="roleId" column="role_id"/>
+                <result property="roleName" column="role_name"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="findByEmailWithRole" resultType="java.util.List" resultMap="userWithRolesMap">
+        SELECT u.*, r.role_name
+        FROM users u
+        LEFT JOIN user_role ur ON u.user_id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.role_id
+        WHERE u.email = #{email};
     </select>
 
     <select id="findMaxUserId" resultType="int">
