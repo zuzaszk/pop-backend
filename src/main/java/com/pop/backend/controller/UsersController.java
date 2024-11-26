@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,27 @@ public class UsersController {
     
     @Autowired
     IUsersService usersService;
+
+
+    @GetMapping("/currentUser")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body("Unauthorized");
+        }
+
+        String email = authentication.getName(); // Retrieve email from SecurityContext
+        Users currentUser = usersService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // // Exclude sensitive information like password
+        // currentUser.setPassword(null);
+
+        currentUser.setUserRole(usersService.findUserRoles(currentUser.getUserId()));
+
+        return ResponseEntity.ok(currentUser);
+    }
 
     @GetMapping("/listAll")
     public ResponseEntity<List<Users>> listAll() {
