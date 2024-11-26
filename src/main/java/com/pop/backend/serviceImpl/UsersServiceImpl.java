@@ -25,7 +25,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Autowired
     private UserRoleMapper userRoleMapper;
 
-     private final Map<Integer, Integer> currentRoleMap = new HashMap<>();
+    private final Map<Integer, Integer> currentRoleMap = new HashMap<>();
     
     @Override
     public Optional<Users> findByEmail(String email) {
@@ -91,7 +91,5 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public Integer getCurrentRoleForUser(Integer userId) {
         return currentRoleMap.get(userId);
     }
-
-
     
 }

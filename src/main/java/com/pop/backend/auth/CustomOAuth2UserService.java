@@ -74,6 +74,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 List<UserRole> roles = userService.findUserRoles(user.getUserId());
                 System.out.println("User roles: " + roles);
                 user.setUserRole(roles);
+                userService.setCurrentRoleForUser(user.getUserId(), 5);
+                System.out.println("User: " + userService.getCurrentRoleForUser(user.getUserId()));
                 userService.updateUser(user);
             }
         } else {
@@ -89,7 +91,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // return oAuth2User;
 
         // Process the attributes and map to a custom user entity
-        CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, existingUser.orElse(null), jwtToken);
+        CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, user, jwtToken);
         
         customUser.setJwtToken(jwtToken);
 
