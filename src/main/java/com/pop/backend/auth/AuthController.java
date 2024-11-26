@@ -79,6 +79,7 @@ public class AuthController {
                 List<UserRole> roles = usersService.findUserRoles(newUser.getUserId());
                 System.out.println("User roles: " + roles);
                 newUser.setUserRole(roles);
+                usersService.setCurrentRoleForUser(newUser.getUserId(), 5);
                 usersService.updateUser(newUser);
             }
 
