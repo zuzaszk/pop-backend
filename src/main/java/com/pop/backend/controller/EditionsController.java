@@ -5,6 +5,7 @@ import com.pop.backend.mapper.EditionsMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,7 @@ public class EditionsController {
             summary = "List all editions",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Editions>> getAllEditions() {
         List<Editions> editions = editionsMapper.selectList(null);
         return ResponseEntity.ok(editions);
