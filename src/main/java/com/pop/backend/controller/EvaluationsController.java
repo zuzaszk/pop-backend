@@ -33,6 +33,7 @@ public class EvaluationsController {
             summary = "List all projects that assigned to supervisor/reviewer to evaluate",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
             @RequestParam("userId") Integer userId,
             @RequestParam("roleId") Integer roleId,
@@ -48,6 +49,7 @@ public class EvaluationsController {
             summary = "Supervisor/Reviewer add evaluation for a certain project",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> addEvaluation(
             @RequestBody Evaluations evaluation) {
 
