@@ -116,6 +116,10 @@ public class AuthController {
 
             user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
 
+            List<UserRole> roles = usersService.findUserRoles(user.getUserId());
+            user.setUserRole(roles);
+            usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+
             String token = tokenService.generateToken(user);
 
             System.out.println("User logged in successfully!");
