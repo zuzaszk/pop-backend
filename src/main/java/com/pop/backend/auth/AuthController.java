@@ -104,7 +104,7 @@ public class AuthController {
         System.out.println(request);
         
         try {
-            Optional<Users> userOptional = usersService.findByEmail(request.getEmail());
+            Optional<Users> userOptional = usersService.findByEmailWithRole(request.getEmail());
             if (userOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
             }
@@ -115,10 +115,15 @@ public class AuthController {
             }
 
             user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
-
-            List<UserRole> roles = usersService.findUserRoles(user.getUserId());
-            user.setUserRole(roles);
+            // List<UserRole> roles = usersService.findUserRoles(user.getUserId());
+            // System.out.println("User roles: " + roles);
+            // user.setUserRole(roles);
+            // System.out.println("User: " + user);
+            // System.out.println("User roles: " + user.getUserRole().get(0).getRoleId());
+            // usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
             usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+        
+            usersService.updateUser(user);
 
             String token = tokenService.generateToken(user);
 

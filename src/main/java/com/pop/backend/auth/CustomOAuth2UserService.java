@@ -1,14 +1,12 @@
 package com.pop.backend.auth;
 
 import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.pop.backend.security.CustomOAuth2User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -18,8 +16,6 @@ import org.springframework.stereotype.Service;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
-
-import lombok.Data;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -75,20 +71,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 System.out.println("User roles: " + roles);
                 user.setUserRole(roles);
                 userService.setCurrentRoleForUser(user.getUserId(), 5);
-                System.out.println("User role: " + userService.getCurrentRoleForUser(user.getUserId()));
+                System.out.println("User: " + userService.getCurrentRoleForUser(user.getUserId()));
                 userService.updateUser(user);
             }
         } else {
             user = existingUser.get();
-            List<UserRole> roles = userService.findUserRoles(user.getUserId());
-            // System.out.println("User roles: " + roles);
-            // System.out.println("User roles: " + user.getUserRole());
-            user.setUserRole(roles);
-            // System.out.println("User roles: " + user.getUserRole());
-            userService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
-            System.out.println("User role: " + userService.getCurrentRoleForUser(user.getUserId()));
-            
             user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+            // userService.setCurrentRoleForUser(user.getUserId(), 5);
+            // System.out.println("User: " + userService.getCurrentRoleForUser(user.getUserId()));
+            
+            // List<UserRole> roles = userService.findUserRoles(user.getUserId());
+            // System.out.println("User roles: " + roles);
+            System.out.println("User role: " + user.getUserRole().get(0).getRoleId());
+            // user.setUserRole(roles);
+            // System.out.println("User: " + user);
+            // System.out.println("User roles: " + roles.get(0).getRoleId());
+            userService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+
             userService.updateUser(user);
         }
 
@@ -99,8 +98,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // return oAuth2User;
 
         // Process the attributes and map to a custom user entity
-        // CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, user, jwtToken);
         CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, existingUser.orElse(null), jwtToken);
+        
         customUser.setJwtToken(jwtToken);
 
         return customUser;
