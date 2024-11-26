@@ -75,11 +75,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 System.out.println("User roles: " + roles);
                 user.setUserRole(roles);
                 userService.setCurrentRoleForUser(user.getUserId(), 5);
-                System.out.println("User: " + userService.getCurrentRoleForUser(user.getUserId()));
+                System.out.println("User role: " + userService.getCurrentRoleForUser(user.getUserId()));
                 userService.updateUser(user);
             }
         } else {
             user = existingUser.get();
+            List<UserRole> roles = userService.findUserRoles(user.getUserId());
+            // System.out.println("User roles: " + roles);
+            // System.out.println("User roles: " + user.getUserRole());
+            user.setUserRole(roles);
+            // System.out.println("User roles: " + user.getUserRole());
+            userService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+            System.out.println("User role: " + userService.getCurrentRoleForUser(user.getUserId()));
+            
             user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
             userService.updateUser(user);
         }
@@ -91,8 +99,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // return oAuth2User;
 
         // Process the attributes and map to a custom user entity
-        CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, user, jwtToken);
-        
+        // CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, user, jwtToken);
+        CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, existingUser.orElse(null), jwtToken);
         customUser.setJwtToken(jwtToken);
 
         return customUser;
