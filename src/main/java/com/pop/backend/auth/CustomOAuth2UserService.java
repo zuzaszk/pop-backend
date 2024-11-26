@@ -1,10 +1,13 @@
 package com.pop.backend.auth;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -15,14 +18,20 @@ import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
 
+import lombok.Data;
+
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Autowired
     private final IUsersService userService;
 
-    public CustomOAuth2UserService(IUsersService userService) {
+    @Autowired
+    private final TokenService tokenService;
+
+    public CustomOAuth2UserService(IUsersService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -34,35 +43,74 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String lastName = oAuth2User.getAttribute("family_name");
 
         Optional<Users> existingUser = userService.findByEmail(email);
+        Users user;
+
         if (existingUser.isEmpty()) {
-            Users newUser = new Users();
-            newUser.setEmail(email);
-            newUser.setName(lastName + " " + firstName);
-            newUser.setFirstName(firstName);
-            newUser.setLastName(lastName);
-            newUser.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            newUser.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+            user = new Users();
+            user.setEmail(email);
+            user.setName(lastName + " " + firstName);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
 
             try {
-                userService.registerUser(newUser);
+                userService.registerUser(user);
             } catch (Exception e) {
                 e.printStackTrace();
                 Integer maxUserId = userService.findMaxUserId();
-                newUser.setUserId(maxUserId + 1);
-                userService.registerUser(newUser);
+                user.setUserId(maxUserId + 1);
+                userService.registerUser(user);
             } finally {
                 UserRole userRole = new UserRole();
-                userRole.setUserId(newUser.getUserId());
+                userRole.setUserId(user.getUserId());
                 userRole.setRoleId(5);
                 userService.insertUserRole(userRole);
-                List<UserRole> roles = userService.findUserRoles(newUser.getUserId());
+                List<UserRole> roles = userService.findUserRoles(user.getUserId());
                 System.out.println("User roles: " + roles);
-                newUser.setUserRole(roles);
-                userService.updateUser(newUser);
+                user.setUserRole(roles);
+                userService.updateUser(user);
             }
+        } else {
+            user = existingUser.get();
+            user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+            userService.updateUser(user);
         }
 
-        return oAuth2User;
+        String jwtToken = tokenService.generateToken(user);
+
+        return new CustomOAuth2User(oAuth2User, jwtToken);
+        // return oAuth2User;
     }
     
+}
+
+@Data
+class CustomOAuth2User implements OAuth2User {
+    private final OAuth2User oAuth2User;
+    private final String jwtToken;
+
+    public CustomOAuth2User(OAuth2User oAuth2User, String jwtToken) {
+        this.oAuth2User = oAuth2User;
+        this.jwtToken = jwtToken;
+    }
+
+    public String getJwtToken() {
+        return jwtToken;
+    }
+    
+    @Override
+    public Map<String, Object> getAttributes() {
+        return oAuth2User.getAttributes();
+   }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return oAuth2User.getAuthorities();
+    }
+
+    @Override
+    public String getName() {
+        return oAuth2User.getName();
+    }
 }

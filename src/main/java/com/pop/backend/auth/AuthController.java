@@ -85,6 +85,10 @@ public class AuthController {
             // return ResponseEntity.ok("User registered successfully!");
 
             String token = tokenService.generateToken(newUser);
+
+            System.out.println("User registered successfully!");
+            System.out.println("Token: " + token);
+
             return ResponseEntity.ok(new AuthResponse("User registered successfully!", token));
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +113,13 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
             }
 
+            user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+
             String token = tokenService.generateToken(user);
+
+            System.out.println("User logged in successfully!");
+            System.out.println("Token: " + token);
+
             return ResponseEntity.ok(new AuthResponse("User logged in successfully!", token));
         } catch (Exception e) {
             e.printStackTrace();
