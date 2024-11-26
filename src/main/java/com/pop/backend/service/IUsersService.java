@@ -11,6 +11,8 @@ public interface IUsersService extends IService<Users> {
 
     Optional<Users> findByEmail(String email);
 
+    Optional<Users> findByEmailWithRole(String email);
+
     Integer findMaxUserId();
 
     void registerUser(Users user);

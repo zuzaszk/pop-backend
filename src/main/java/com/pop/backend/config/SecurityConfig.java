@@ -4,6 +4,7 @@ package com.pop.backend.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -39,10 +41,23 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors
+                .configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.addAllowedOrigin("http://localhost:5173"); // Frontend URL
+                    config.addAllowedMethod("*"); // Allow all HTTP methods
+                    config.addAllowedHeader("*"); // Allow all headers
+                    config.setAllowCredentials(true); // Allow cookies/auth tokens
+                    return config;
+                })
+            )
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                    "/", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/login")
-                    .permitAll()
+                    "/", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/login"
+                    ).permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
                 .loginPage(frontendUrl + "/login")
@@ -58,9 +73,6 @@ public class SecurityConfig {
             // .csrf(c -> c
             //     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             // )
-            .csrf(csrf -> csrf.disable())
-            // .sessionManagement(session -> session
-            //     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             ;
         return http.build();
@@ -69,19 +81,5 @@ public class SecurityConfig {
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    CorsFilter corsFilter() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:5173");
-        corsConfiguration.addAllowedMethod("*"); // Allow all HTTP methods
-        corsConfiguration.addAllowedHeader("*"); // Allow all headers
-        corsConfiguration.setAllowCredentials(true); // Allow cookies/auth tokens
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        return new CorsFilter(source);
     }
 }

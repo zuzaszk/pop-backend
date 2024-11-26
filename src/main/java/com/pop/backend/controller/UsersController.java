@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,6 +53,7 @@ public class UsersController {
     
     @GetMapping("/listAll")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<List<Users>> listAll() {
         List<Users> users = usersService.listAll();
         return ResponseEntity.ok(users);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.pop.backend.security.CustomOAuth2User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -41,9 +42,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String firstName = oAuth2User.getAttribute("given_name");
         String lastName = oAuth2User.getAttribute("family_name");
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        Optional<Users> existingUser = userService.findByEmail(email);
         Users user;
+
+        Optional<Users> existingUser = userService.findByEmailWithRole(email);
+        // Optional<Users> existingUser = userService.findByEmail(email);
 
         if (existingUser.isEmpty()) {
             user = new Users();
@@ -77,40 +82,57 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userService.updateUser(user);
         }
 
+
         String jwtToken = tokenService.generateToken(user);
-
-        return new CustomOAuth2User(oAuth2User, jwtToken);
+        System.out.println("Generated JWT Token: " + jwtToken);
+        // return new CustomOAuth2User(oAuth2User, jwtToken);
         // return oAuth2User;
+
+        // Process the attributes and map to a custom user entity
+        CustomOAuth2User customUser = processOAuth2User(registrationId, attributes, existingUser.orElse(null), jwtToken);
+        
+        customUser.setJwtToken(jwtToken);
+
+        return customUser;
     }
-    
+
+    private CustomOAuth2User processOAuth2User(String registrationId,
+                                               Map<String, Object> attributes,
+                                               Users user,
+                                               String jwtToken) {
+        String email = (String) attributes.get("email");
+        String name = (String) attributes.get("name");
+        return new CustomOAuth2User(attributes, email, name, user.getUserRole(), jwtToken);
+    }
+
 }
 
-@Data
-class CustomOAuth2User implements OAuth2User {
-    private final OAuth2User oAuth2User;
-    private final String jwtToken;
+// @Data
+// class CustomOAuth2User implements OAuth2User {
+//     private final OAuth2User oAuth2User;
+//     private final String jwtToken;
 
-    public CustomOAuth2User(OAuth2User oAuth2User, String jwtToken) {
-        this.oAuth2User = oAuth2User;
-        this.jwtToken = jwtToken;
-    }
+//     public CustomOAuth2User(OAuth2User oAuth2User, String jwtToken) {
+//         this.oAuth2User = oAuth2User;
+//         this.jwtToken = jwtToken;
+//     }
 
-    public String getJwtToken() {
-        return jwtToken;
-    }
+//     public String getJwtToken() {
+//         return jwtToken;
+//     }
     
-    @Override
-    public Map<String, Object> getAttributes() {
-        return oAuth2User.getAttributes();
-   }
+//     @Override
+//     public Map<String, Object> getAttributes() {
+//         return oAuth2User.getAttributes();
+//    }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return oAuth2User.getAuthorities();
-    }
+//     @Override
+//     public Collection<? extends GrantedAuthority> getAuthorities() {
+//         return oAuth2User.getAuthorities();
+//     }
 
-    @Override
-    public String getName() {
-        return oAuth2User.getName();
-    }
-}
+//     @Override
+//     public String getName() {
+//         return oAuth2User.getName();
+//     }
+// }
