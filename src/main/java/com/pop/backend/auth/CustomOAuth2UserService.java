@@ -91,6 +91,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userService.updateUser(user);
         }
 
+        existingUser = userService.findByEmailWithRole(email);
 
         String jwtToken = tokenService.generateToken(user);
         System.out.println("Generated JWT Token: " + jwtToken);
