@@ -22,7 +22,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String token = customOAuth2User.getJwtToken();
 
         // Send token in the response
-        response.setContentType("application/json");
-        response.getWriter().write("{\"token\": \"" + token + "\"}");
+        // response.setContentType("application/json");
+        // response.getWriter().write("{\"token\": \"" + token + "\"}");
+
+        // Redirect to frontend with token in the URL
+        response.sendRedirect("http://localhost:5173/#/login-success?token=" + token);
     }
 }

@@ -11,9 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-
 import com.pop.backend.auth.CustomOAuth2UserService;
 import com.pop.backend.auth.JwtFilter;
 import com.pop.backend.auth.OAuth2SuccessHandler;
@@ -66,7 +63,8 @@ public class SecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService))
                 .successHandler(OAuth2SuccessHandler)
-                .defaultSuccessUrl(frontendUrl + "/#/dashboard", true))
+                // .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
+                )
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
                 .permitAll())
