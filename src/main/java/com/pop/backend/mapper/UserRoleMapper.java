@@ -12,4 +12,5 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
     // void insertUserRole(UserRole userRole);
     List<UserRole> findRolesByUserId(Integer userId);
     Integer findMaxUserRoleId();
+    UserRole findRole(Integer userId, Integer roleId, Integer projectId, Integer editionId);
 }

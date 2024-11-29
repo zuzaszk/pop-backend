@@ -17,6 +17,8 @@ import com.pop.backend.entity.Users;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IUsersService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -42,6 +44,10 @@ public class AuthController {
 
     // @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
     @PostMapping("/register")
+    @Operation(
+            summary = "Register a new user",
+            tags = {"Auth"}
+    )
     public ResponseEntity<AuthResponse> register(@RequestBody RegistrationRequest request) {
         System.out.println("Register endpoint hit");
         System.out.println(request);
@@ -98,6 +104,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Login user",
+            tags = {"Auth"}
+    )
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         
         System.out.println("Login endpoint hit");
@@ -138,6 +148,10 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
+    @Operation(
+            summary = "Send password reset link to user's email",
+            tags = {"Auth"}
+    )
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         System.out.println("Forgot password endpoint hit");
         System.out.println(request);
@@ -164,6 +178,10 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
+    @Operation(
+            summary = "Reset user's password",
+            tags = {"Auth"}
+    )
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         System.out.println("Reset password endpoint hit");
         System.out.println(request);

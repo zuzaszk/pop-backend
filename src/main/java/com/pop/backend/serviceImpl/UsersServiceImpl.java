@@ -71,6 +71,16 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
+    public void deleteUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId) {
+        UserRole userRole = userRoleMapper.findRole(userId, roleId, projectId, editionId);
+        if (userRole != null) {
+            userRoleMapper.deleteById(userRole.getUserRoleId());
+        } else {
+            throw new IllegalArgumentException("No matching user role found for deletion.");
+        }
+    }
+
+    @Override
     public List<UserRole> findUserRoles(Integer userId) {
        return userRoleMapper.findRolesByUserId(userId);
     }
@@ -90,6 +100,18 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Override
     public Integer getCurrentRoleForUser(Integer userId) {
         return currentRoleMap.get(userId);
+    }
+
+    @Override
+    public void updateUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId,
+            Integer newRoleId) {
+        UserRole userRole = userRoleMapper.findRole(userId, roleId, projectId, editionId);
+        if (userRole != null) {
+            userRole.setRoleId(newRoleId);
+            userRoleMapper.updateById(userRole);
+        } else {
+            throw new IllegalArgumentException("No matching user role found for update.");
+        }
     }
     
 }

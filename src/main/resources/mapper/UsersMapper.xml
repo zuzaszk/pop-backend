@@ -63,6 +63,7 @@
             roles r ON ur.role_id = r.role_id
     </select>
 
+
     <resultMap id="UserWithRolesResultMap" type="com.pop.backend.entity.Users">
         <id property="userId" column="user_id" />
         <result property="firstName" column="first_name"/>
