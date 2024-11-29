@@ -10,10 +10,14 @@
         VALUES (#{userId}, #{roleId}, #{projectId}, #{editionId})
     </select>
 
-    <select id="deleteUserRole" parameterType="com.pop.backend.entity.UserRole">
+    <!-- <select id="deleteUserRole">
         DELETE FROM user_role
-        WHERE user_id = #{userId} AND role_id = #{roleId} AND project_id = #{projectId}
-    </select>
+        WHERE
+            user_id = #{userId}
+            AND role_id = #{roleId}
+            AND project_id = #{projectId}
+            AND edition_id = #{editionId}
+    </select> -->
 
     <select id="findRolesByUserId" parameterType="com.pop.backend.entity.UserRole">
         SELECT *
@@ -23,6 +27,25 @@
 
     <select id="findMaxUserRoleId" resultType="int">
         SELECT COALESCE(MAX(user_role_id), 0) FROM user_role
+    </select>
+
+    <select id="findRole" resultType="com.pop.backend.entity.UserRole">
+        SELECT *
+        FROM user_role
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="roleId != null">
+                AND role_id = #{roleId}
+            </if>
+            <if test="projectId != null">
+                AND project_id = #{projectId}
+            </if>
+            <if test="editionId != null">
+                AND edition_id = #{editionId}
+            </if>
+        </where>
     </select>
 
     <!-- <select id="listAll" resultMap="UserRoleBaseResultMap">
