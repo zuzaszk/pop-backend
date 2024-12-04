@@ -12,9 +12,6 @@ import com.pop.backend.service.IEvaluationsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.sql.Wrapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -38,8 +35,8 @@ public class EvaluationsServiceImpl extends ServiceImpl<EvaluationsMapper, Evalu
     private UserRoleMapper userRoleMapper;
 
     @Override
-    public List<Projects> getProjectsAssignedToUser(Integer userId, Integer evaluationRoleId, Integer editionId) {
-
+    public List<Projects> getProjectsAssignedToUser(Integer userId, Integer editionId) {
+        Integer evaluationRoleId = EvaluationRole.ASSIGNED_TO_EVALUATE.getId();
         List<Projects> assignedProject = projectsMapper.getProjectsAssignedToUser(userId, evaluationRoleId, editionId);
 
         for (Projects project : assignedProject) {
@@ -70,8 +67,10 @@ public class EvaluationsServiceImpl extends ServiceImpl<EvaluationsMapper, Evalu
         );
         if (assignedEvaluation != null) {
             assignedEvaluation.setScore(evaluation.getScore());
-            if (assignedEvaluation.getComment() == null && evaluation.getComment()!=null){
-                assignedEvaluation.setComment(evaluation.getComment());
+            if (assignedEvaluation.getComment() == null || assignedEvaluation.getComment().equals("")){
+                if (evaluation.getComment()!=null){
+                    assignedEvaluation.setComment(evaluation.getComment());
+                }
             }
             assignedEvaluation.setUpdatedAt(LocalDateTime.now());
             assignedEvaluation.setState(2); // Evaluation Completed

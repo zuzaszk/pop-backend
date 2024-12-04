@@ -100,7 +100,10 @@ public class StatisticController {
 
 
     @GetMapping("/evaluationDetails")
-    @Operation(summary = "List project evaluation details with final weighted scores")
+    @Operation(
+            summary = "List project evaluation details with final weighted scores",
+            description = "Author: YL"
+    )
     public ResponseEntity<List<Map<String, Object>>> listProjectEvaluationDetails(
             @RequestParam(required = false) Integer editionId) {
         List<Map<String, Object>> projectDetails = projectsService.listProjectEvaluationDetails(editionId);

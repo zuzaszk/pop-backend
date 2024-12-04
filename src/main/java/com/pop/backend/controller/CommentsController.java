@@ -6,12 +6,12 @@ import com.pop.backend.entity.Editions;
 import com.pop.backend.service.ICommentsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * <p>
@@ -40,6 +40,24 @@ public class CommentsController {
             return ResponseEntity.badRequest().body(response);
         }
     }
+
+
+    @GetMapping("/getByElementId")
+    @Operation(
+            summary = "Get comments by elementId",
+            description = "Author: YL"
+    )
+    public ResponseEntity<ApiResponse<List<Comments>>> getCommentsByElementId(
+            @RequestParam("elementId") Integer elementId) {
+        try {
+            List<Comments> comments = commentsService.getCommentsByElementId(elementId);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Comments retrieved successfully.", comments));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to retrieve comments.", null));
+        }
+    }
+
 
 
 }

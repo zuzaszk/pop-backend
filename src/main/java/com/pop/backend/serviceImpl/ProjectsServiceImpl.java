@@ -13,6 +13,7 @@ import com.pop.backend.enums.EvaluationRole;
 import com.pop.backend.mapper.ProjectElementsMapper;
 import com.pop.backend.mapper.ReviewsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,7 +42,31 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
     private ProjectElementsMapper projectElementsMapper;
 
     @Autowired
-    private EvaluationWeightsConfig evaluationWeightsConfig;
+    private final EvaluationWeightsConfig evaluationWeightsConfig;
+
+    @Autowired
+    public ProjectsServiceImpl(EvaluationWeightsConfig evaluationWeightsConfig) {
+        this.evaluationWeightsConfig = evaluationWeightsConfig;
+    }
+
+
+    @Value("${evaluation.weights.ASSIGNED_TO_EVALUATE}")
+    private Double assignedToEvaluateWeight;
+
+    @Value("${evaluation.weights.SUPERVISOR}")
+    private Double supervisorWeight;
+
+    @Value("${evaluation.weights.GENERAL_TEACHING_MEMBER}")
+    private Double generalTeachingMemberWeight;
+
+    @Value("${evaluation.weights.STUDENT}")
+    private Double studentWeight;
+
+    @Value("${evaluation.weights.SPECTATOR}")
+    private Double spectatorWeight;
+
+
+
 
 
 
@@ -120,18 +145,21 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
 
         // Convert weights from configuration
         Map<Integer, Double> weights = new HashMap<>();
-        for (EvaluationRole role : EvaluationRole.values()) {
-            weights.put(role.getId(), evaluationWeightsConfig.getWeights().getOrDefault(role.name(), 0.0));
-        }
+        weights.put(EvaluationRole.ASSIGNED_TO_EVALUATE.getId(), assignedToEvaluateWeight);
+        weights.put(EvaluationRole.SUPERVISOR.getId(), supervisorWeight);
+        weights.put(EvaluationRole.GENERAL_TEACHING_MEMBER.getId(), generalTeachingMemberWeight);
+        weights.put(EvaluationRole.STUDENT.getId(), studentWeight);
+        weights.put(EvaluationRole.SPECTATOR.getId(), spectatorWeight);
+
 
         // Organize data by project
         Map<Integer, Map<String, Object>> projectData = new HashMap<>();
         for (Map<String, Object> record : stats) {
-            Integer projectId = (Integer) record.get("projectId");
-            String projectName = (String) record.get("projectName");
-            Integer evaluationRoleId = (Integer) record.get("evaluationRoleId");
-            Long evaluationCount = (Long) record.get("evaluationCount");
-            Double averageScore = record.get("averageScore") != null ? ((Number) record.get("averageScore")).doubleValue() : 0.0;
+            Integer projectId = (Integer) record.get("projectid");
+            String projectName = (String) record.get("projectname");
+            Integer evaluationRoleId = (Integer) record.get("evaluationroleid");
+            Long evaluationCount = (Long) record.get("evaluationcount");
+            Double averageScore = record.get("averagescore") != null ? ((Number) record.get("averagescore")).doubleValue() : 0.0;
 
             // Prepare project data
             projectData.putIfAbsent(projectId, new HashMap<>());
@@ -141,21 +169,30 @@ public class ProjectsServiceImpl extends ServiceImpl<ProjectsMapper, Projects> i
 
             // Collect evaluation data
             List<Map<String, Object>> evaluations = (List<Map<String, Object>>) project.computeIfAbsent("evaluations", k -> new ArrayList<>());
-            evaluations.add(Map.of(
-                    "evaluationRole", EvaluationRole.getRoleNameById(evaluationRoleId),
-                    "evaluationCount", evaluationCount,
-                    "averageScore", averageScore
-            ));
+            if (evaluationRoleId != null) {
+                evaluations.add(Map.of(
+                        "evaluationRole", EvaluationRole.getRoleNameById(evaluationRoleId),
+                        "evaluationCount", evaluationCount,
+                        "averageScore", averageScore
+                ));
 
-            // Calculate the final weighted score
-            Double weight = weights.getOrDefault(evaluationRoleId, 0.0);
-            project.put("finalWeightedScore", ((Double) project.getOrDefault("finalWeightedScore", 0.0)) + averageScore * weight);
+                // Calculate the final weighted score
+                Double weight = weights.getOrDefault(evaluationRoleId, 0.0);
+                project.put("finalWeightedScore", ((Double) project.getOrDefault("finalWeightedScore", 0.0)) + averageScore * weight);
+            } else {
+                // Log or handle the case where evaluationRoleId is null, if necessary
+                System.out.println("Skipping record with null evaluationRoleId for projectId: " + projectId);
+            }
+
         }
 
         return new ArrayList<>(projectData.values());
     }
 
-
+    @Override
+    public List<Projects> getProjectsByUserRole(Integer userId, Integer roleId, String title, Integer year, Integer language) {
+        return projectsMapper.getProjectsByUserRole(userId, roleId, title, year, language);
+    }
 
 
 }

@@ -17,7 +17,7 @@ import java.util.List;
  */
 public interface IEvaluationsService extends IService<Evaluations> {
 
-    List<Projects> getProjectsAssignedToUser(Integer userId, Integer evaluationRoleId, Integer editionId);
+    List<Projects> getProjectsAssignedToUser(Integer userId, Integer editionId);
 
     ApiResponse<String> addEvaluation(Evaluations evaluation);
 

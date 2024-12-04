@@ -38,6 +38,13 @@ public interface ProjectsMapper extends BaseMapper<Projects> {
     );
 
 
+    List<Projects> getProjectsByUserRole(@Param("userId") Integer userId,
+                                         @Param("roleId") Integer roleId,
+                                         @Param("title") String title,
+                                         @Param("year") Integer year,
+                                         @Param("language") Integer language);
+
+
 
 
 }

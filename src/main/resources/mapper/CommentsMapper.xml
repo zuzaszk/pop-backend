@@ -2,4 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pop.backend.mapper.CommentsMapper">
 
+
+
+    <select id="getCommentsByElementId" resultMap="CommentsResultMap">
+        SELECT
+            comment_id, element_id, user_id, comment, state, is_public, created_at
+        FROM comments
+        WHERE element_id = #{elementId}
+        ORDER BY created_at DESC
+    </select>
+
+
+    <resultMap id="CommentsResultMap" type="com.pop.backend.entity.Comments">
+        <id property="commentId" column="comment_id"/>
+        <result property="elementId" column="element_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="comment" column="comment"/>
+        <result property="state" column="state"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
 </mapper>

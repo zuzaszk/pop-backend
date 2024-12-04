@@ -25,14 +25,24 @@
     </select>
 
 
+<!--    <select id="getEvaluationByUserProjectEvaluationRole" resultMap="EvaluationBaseResultMap">-->
+<!--        SELECT-->
+<!--            evaluation_id,-->
+<!--            score,-->
+<!--            comment,-->
+<!--            state,-->
+<!--            is_public,-->
+<!--            created_at-->
+<!--        FROM evaluations-->
+<!--        WHERE project_id = #{projectId}-->
+<!--          AND user_id = #{userId}-->
+<!--          AND evaluation_role_id = #{evaluationRoleId}-->
+<!--    </select>-->
+
+
     <select id="getEvaluationByUserProjectEvaluationRole" resultMap="EvaluationBaseResultMap">
         SELECT
-            evaluation_id,
-            score,
-            comment,
-            state,
-            is_public,
-            created_at
+            *
         FROM evaluations
         WHERE project_id = #{projectId}
           AND user_id = #{userId}

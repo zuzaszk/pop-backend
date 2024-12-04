@@ -41,10 +41,9 @@ public class EvaluationsController {
     )
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
             @RequestParam("userId") Integer userId,
-            @RequestParam("evaluationRoleId") Integer evaluationRoleId,
             @RequestParam(value = "editionId", required = false) Integer editionId) {
 
-        List<Projects> projects = evaluationsService.getProjectsAssignedToUser(userId, evaluationRoleId, editionId);
+        List<Projects> projects = evaluationsService.getProjectsAssignedToUser(userId, editionId);
         return ResponseEntity.ok(projects);
     }
 
