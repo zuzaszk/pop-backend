@@ -17,6 +17,8 @@ import com.pop.backend.entity.Users;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IUsersService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -42,6 +44,10 @@ public class AuthController {
 
     // @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
     @PostMapping("/register")
+    @Operation(
+            summary = "Register a new user",
+            tags = {"Auth"}
+    )
     public ResponseEntity<AuthResponse> register(@RequestBody RegistrationRequest request) {
         System.out.println("Register endpoint hit");
         System.out.println(request);
@@ -79,12 +85,17 @@ public class AuthController {
                 List<UserRole> roles = usersService.findUserRoles(newUser.getUserId());
                 System.out.println("User roles: " + roles);
                 newUser.setUserRole(roles);
+                usersService.setCurrentRoleForUser(newUser.getUserId(), 5);
                 usersService.updateUser(newUser);
             }
 
             // return ResponseEntity.ok("User registered successfully!");
 
             String token = tokenService.generateToken(newUser);
+
+            System.out.println("User registered successfully!");
+            System.out.println("Token: " + token);
+
             return ResponseEntity.ok(new AuthResponse("User registered successfully!", token));
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,13 +104,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Login user",
+            tags = {"Auth"}
+    )
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         
         System.out.println("Login endpoint hit");
         System.out.println(request);
         
         try {
-            Optional<Users> userOptional = usersService.findByEmail(request.getEmail());
+            Optional<Users> userOptional = usersService.findByEmailWithRole(request.getEmail());
             if (userOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
             }
@@ -109,7 +124,22 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
             }
 
+            user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+            // List<UserRole> roles = usersService.findUserRoles(user.getUserId());
+            // System.out.println("User roles: " + roles);
+            // user.setUserRole(roles);
+            // System.out.println("User: " + user);
+            // System.out.println("User roles: " + user.getUserRole().get(0).getRoleId());
+            // usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+            usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+        
+            usersService.updateUser(user);
+
             String token = tokenService.generateToken(user);
+
+            System.out.println("User logged in successfully!");
+            System.out.println("Token: " + token);
+
             return ResponseEntity.ok(new AuthResponse("User logged in successfully!", token));
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,6 +148,10 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
+    @Operation(
+            summary = "Send password reset link to user's email",
+            tags = {"Auth"}
+    )
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         System.out.println("Forgot password endpoint hit");
         System.out.println(request);
@@ -144,6 +178,10 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
+    @Operation(
+            summary = "Reset user's password",
+            tags = {"Auth"}
+    )
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         System.out.println("Reset password endpoint hit");
         System.out.println(request);

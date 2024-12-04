@@ -30,4 +30,8 @@ public interface IUsersService extends IService<Users> {
     void setCurrentRoleForUser(Integer userId, Integer roleId);
 
     Integer getCurrentRoleForUser(Integer userId);
+
+    void deleteUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId);
+
+    void updateUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId, Integer newRoleId);
 }

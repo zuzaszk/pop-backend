@@ -34,7 +34,7 @@
     </resultMap>
 
     <select id="findByEmailWithRole" resultType="java.util.List" resultMap="userWithRolesMap">
-        SELECT u.*, r.role_name
+        SELECT u.*, ur.*, r.*
         FROM users u
         LEFT JOIN user_role ur ON u.user_id = ur.user_id
         LEFT JOIN roles r ON ur.role_id = r.role_id
@@ -62,6 +62,7 @@
         LEFT JOIN 
             roles r ON ur.role_id = r.role_id
     </select>
+
 
     <resultMap id="UserWithRolesResultMap" type="com.pop.backend.entity.Users">
         <id property="userId" column="user_id" />
