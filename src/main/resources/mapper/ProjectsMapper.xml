@@ -95,6 +95,26 @@
     </select>
 
 
+    <select id="getProjectsByUserRole" resultMap="ProjectBaseResultMap">
+        SELECT p.project_id, p.title, p.acronym, p.overview, p.description, p.language, p.year, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete, p.edition_id
+        FROM projects p
+        INNER JOIN user_role ur ON p.project_id = ur.project_id
+        <where>
+            ur.user_id = #{userId}
+            AND ur.role_id = #{roleId}
+            <if test="title != null and title != ''">
+                AND p.title ILIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="year != null">
+                AND p.year = #{year}
+            </if>
+            <if test="language != null">
+                AND p.language = #{language}
+            </if>
+        </where>
+    </select>
+
+
 
 
 

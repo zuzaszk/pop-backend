@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -44,5 +45,11 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         commentsMapper.insert(comments);
 
         return new ApiResponse<>(true, "Comments added successfully.", null);
+    }
+
+
+    @Override
+    public List<Comments> getCommentsByElementId(Integer elementId) {
+        return commentsMapper.getCommentsByElementId(elementId);
     }
 }

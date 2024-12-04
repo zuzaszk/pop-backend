@@ -5,6 +5,8 @@ import com.pop.backend.entity.Comments;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pop.backend.entity.Editions;
 
+import java.util.List;
+
 /**
  * <p>
  * </p>
@@ -15,5 +17,7 @@ import com.pop.backend.entity.Editions;
 public interface ICommentsService extends IService<Comments> {
 
     ApiResponse<String> addComment(Comments comments);
+
+    List<Comments> getCommentsByElementId(Integer elementId);
 
 }

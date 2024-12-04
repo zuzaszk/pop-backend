@@ -20,6 +20,8 @@ public interface IProjectsService extends IService<Projects> {
 
     List<Map<String, Object>> listProjectEvaluationDetails(Integer editionId);
 
+    List<Projects> getProjectsByUserRole(Integer userId, Integer roleId, String title, Integer year, Integer language);
+
 
 
 }

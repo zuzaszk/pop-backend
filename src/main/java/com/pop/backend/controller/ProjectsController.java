@@ -1,10 +1,12 @@
 package com.pop.backend.controller;
+import com.pop.backend.common.ApiResponse;
 import com.pop.backend.entity.ProjectElements;
 import com.pop.backend.entity.Projects;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IProjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
@@ -82,6 +84,31 @@ public class ProjectsController {
         Integer projectId = projectsService.saveBasicInfo(projects);
         return ResponseEntity.ok(projectId);
     }
+
+
+
+    @GetMapping("/getByUserRole")
+    @Operation(
+            summary = "Get projects connected to a user in a certain role, optional filtered by edition and language",
+            description = "Fetch projects connected to a specific user and role, with optional filters for edition and language."
+    )
+    public ResponseEntity<ApiResponse<List<Projects>>> getProjectsByUserRole(
+            @RequestParam("userId") Integer userId,
+            @RequestParam("roleId") Integer roleId,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "language", required = false) Integer language) {
+        try {
+            List<Projects> projects = projectsService.getProjectsByUserRole(userId, roleId, title, year, language);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Projects retrieved successfully.", projects));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "An error occurred while fetching projects.", null));
+        }
+    }
+
+
+
 
 
 

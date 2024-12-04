@@ -33,5 +33,9 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
 
     UserRole isTeachingMember(@Param("userId") Integer userId);
 
+    int updateUserRole(@Param("projectId") Integer projectId,
+                       @Param("userId") Integer userId,
+                       @Param("newRoleId") Integer newRoleId);
+
 
 }
