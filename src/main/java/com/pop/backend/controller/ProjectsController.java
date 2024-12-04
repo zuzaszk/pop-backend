@@ -34,7 +34,7 @@ public class ProjectsController {
             summary = "List all projects with their title, arc and description",
             description = "Author: YL"
     )
-
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> listAll(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer year,
@@ -49,6 +49,7 @@ public class ProjectsController {
             summary = "Get project information, and everything related to this project",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Projects> getBasicProjectInfoById(
             @RequestParam Integer projectId) {
         Projects project = projectsService.getBasicProjectInfoById(projectId);
@@ -66,6 +67,7 @@ public class ProjectsController {
             summary = "Chair initially create project",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> createProject(
                 @RequestParam("title") String title,
             @RequestParam("editionId") Integer editionId) {
@@ -80,6 +82,7 @@ public class ProjectsController {
             summary = "Student fill info about the project",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Integer> saveBasicInfo(@RequestBody Projects projects) {
         Integer projectId = projectsService.saveBasicInfo(projects);
         return ResponseEntity.ok(projectId);

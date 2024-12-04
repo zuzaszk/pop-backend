@@ -9,11 +9,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import com.pop.backend.auth.CustomOAuth2UserService;
+import com.pop.backend.auth.JwtFilter;
+import com.pop.backend.auth.OAuth2SuccessHandler;
 
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
@@ -22,9 +23,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler OAuth2SuccessHandler;
+    private final JwtFilter jwtFilter;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, OAuth2SuccessHandler OAuth2SuccessHandler, JwtFilter jwtFilter) {
         this.customOAuth2UserService = customOAuth2UserService;
+        this.OAuth2SuccessHandler = OAuth2SuccessHandler;
+        this.jwtFilter = jwtFilter;
     }
 
     @Value("${frontend_url}")
@@ -33,10 +38,23 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors
+                .configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.addAllowedOrigin("http://localhost:5173"); // Frontend URL
+                    config.addAllowedMethod("*"); // Allow all HTTP methods
+                    config.addAllowedHeader("*"); // Allow all headers
+                    config.setAllowCredentials(true); // Allow cookies/auth tokens
+                    return config;
+                })
+            )
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                    "/", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/login")
-                    .permitAll()
+                    "/", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/login"
+                    ).permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
                 .loginPage(frontendUrl + "/login")
@@ -44,17 +62,17 @@ public class SecurityConfig {
                     .baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService))
-                .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
+                .successHandler(OAuth2SuccessHandler)
+                // .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
                 )
+            .logout(logout -> logout
+                .logoutSuccessUrl(frontendUrl + "/login")
+                .permitAll())
             // .csrf(c -> c
             //     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             // )
-            .csrf(csrf -> csrf.disable())
-            // .sessionManagement(session -> session
-            //     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .logout(logout -> logout
-                .logoutSuccessUrl(frontendUrl + "/login")
-                .permitAll());
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            ;
         return http.build();
     }
 
