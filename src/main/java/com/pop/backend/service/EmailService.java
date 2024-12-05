@@ -13,11 +13,26 @@ import java.util.Properties;
 @Service
 public class EmailService {
 
+    @Autowired
     private final JavaMailSender mailSender;
 
-    @Autowired
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
+    }
+
+    public void sendEmail(String toEmail, String subject, String message) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+
+            mailMessage.setTo(toEmail);
+            mailMessage.setSubject(subject);
+            mailMessage.setText(message);
+
+            mailSender.send(mailMessage);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendProclamationEmail(String toEmail) {

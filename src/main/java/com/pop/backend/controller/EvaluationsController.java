@@ -118,10 +118,4 @@ public class EvaluationsController {
                     .body(new ApiResponse<>(false, "An error occurred while retrieving the score.", null));
         }
     }
-
-
-
-
-
-
 }
