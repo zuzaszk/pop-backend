@@ -1,5 +1,12 @@
-{"properties": [{
-  "name": "frontend_url",
-  "type": "java.lang.String",
-  "description": "URL of the frontend application"
-}]}
+{"properties": [
+  {
+    "name": "frontend_url",
+    "type": "java.lang.String",
+    "description": "URL of the frontend application"
+  },
+  {
+    "name": "backend_url",
+    "type": "java.lang.String",
+    "description": "URL of the backend application"
+  }
+]}
