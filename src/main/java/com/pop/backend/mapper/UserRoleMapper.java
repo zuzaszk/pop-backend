@@ -37,5 +37,9 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
                        @Param("userId") Integer userId,
                        @Param("newRoleId") Integer newRoleId);
 
+    List<UserRole> findRolesByUserId(Integer userId);
+    Integer findMaxUserRoleId();
+    UserRole findRole(Integer userId, Integer roleId, Integer projectId, Integer editionId);
+
 
 }
