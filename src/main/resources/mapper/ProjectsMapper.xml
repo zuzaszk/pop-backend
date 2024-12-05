@@ -3,7 +3,7 @@
 <mapper namespace="com.pop.backend.mapper.ProjectsMapper">
 
     <select id="listAll" resultMap="ProjectBaseResultMap">
-        SELECT p.project_id, p.title, p.keywords, p.acronym, p.description, p.language, p.status, p.is_archived, p.created_at, p.edition_id, p.is_complete, p.year
+        SELECT p.project_id, p.title, p.keywords, p.acronym, p.overview, p.description, p.language, p.status, p.is_archived, p.created_at, p.edition_id, p.is_complete, p.year
         FROM projects p
         <where>
             <if test="title != null and title != ''">
@@ -20,9 +20,12 @@
 
 
 
+
+
+
     <select id="getProjectWithUsersAndEditionById" resultMap="ProjectWithUsersAndEditionResultMap">
         SELECT
-            p.project_id, p.title, p.acronym, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete,
+            p.project_id, p.title, p.acronym, p.overview, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete,
             e.edition_id, e.name AS edition_name, e.year, e.semester, e.is_active, e.description AS edition_description,
             u.user_id, u.first_name, u.last_name, u.email,
             r.role_id, r.role_name
@@ -35,16 +38,92 @@
     </select>
 
 
-    <select id="getProjectsAssignedToUser" resultMap="ProjectBaseResultMap">
-        SELECT p.project_id, p.title, p.acronym, p.description, p.language, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete, p.edition_id
+    <select id="getProjectsAssignedToUser" resultMap="ProjectWithEvaluationStateResultMap">
+        SELECT p.project_id, p.title, p.acronym, p.overview, p.description, p.language, e."state", p.keywords, p.is_archived, p.created_at, p.is_complete, p.edition_id
         FROM projects p
         INNER JOIN evaluations e ON p.project_id = e.project_id
         INNER JOIN editions ed ON p.edition_id = ed.edition_id
-        WHERE e.user_id = #{userId} AND e.role_id = #{roleId}
+        WHERE e.user_id = #{userId}
+          AND e.evaluation_role_id = #{evaluationRoleId}
         <if test="editionId != null">
             AND p.edition_id = #{editionId}
         </if>
     </select>
+
+
+
+    <select id="countProjectsByEdition" resultType="int">
+        SELECT COUNT(*)
+        FROM projects p
+        <if test="editionId != null">
+            WHERE p.edition_id = #{editionId}
+        </if>
+    </select>
+
+
+
+    <select id="getTopTechnologies" resultType="map">
+        SELECT tech AS technology, COUNT(*) AS count
+        FROM (
+        SELECT LOWER(trim(unnest(string_to_array(keywords, ',')))) AS tech
+        FROM projects
+        <if test="editionId != null">
+            WHERE edition_id = #{editionId}
+        </if>
+        ) AS technologies
+        GROUP BY tech
+        ORDER BY count DESC
+        LIMIT 10;
+    </select>
+
+
+
+    <select id="listProjectEvaluationDetails" resultType="map">
+        SELECT
+        p.project_id AS projectId,
+        p.title AS projectName,
+        e.evaluation_role_id AS evaluationRoleId,
+        COUNT(e.score) AS evaluationCount,
+        AVG(e.score) AS averageScore
+        FROM projects p
+        LEFT JOIN evaluations e ON p.project_id = e.project_id
+        <if test="editionId != null">
+            WHERE p.edition_id = #{editionId}
+        </if>
+        GROUP BY p.project_id, p.title, e.evaluation_role_id
+        ORDER BY p.project_id
+    </select>
+
+
+    <select id="getProjectsByUserRole" resultMap="ProjectBaseResultMap">
+        SELECT p.project_id, p.title, p.acronym, p.overview, p.description, p.language, p.year, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete, p.edition_id
+        FROM projects p
+        INNER JOIN user_role ur ON p.project_id = ur.project_id
+        <where>
+            ur.user_id = #{userId}
+            AND ur.role_id = #{roleId}
+            <if test="title != null and title != ''">
+                AND p.title ILIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="year != null">
+                AND p.year = #{year}
+            </if>
+            <if test="language != null">
+                AND p.language = #{language}
+            </if>
+        </where>
+    </select>
+
+
+
+
+
+
+
+
+    <resultMap id="ProjectWithEvaluationStateResultMap" type="com.pop.backend.entity.Projects" extends="ProjectBaseResultMap">
+        <association property="evaluations" resultMap="EvaluationBaseResultMap"/>
+    </resultMap>
 
 
 
@@ -70,6 +149,7 @@
         <result property="editionId" column="edition_id"/>
         <result property="isComplete" column="is_complete"/>
         <result property="year" column="year"/>
+        <result property="overview" column="overview"/>
     </resultMap>
 
 
@@ -96,7 +176,7 @@
 
     <resultMap id="ElementBaseResultMap" type="com.pop.backend.entity.ProjectElements">
         <id property="elementId" column="element_id"/>
-        <result property="filePath" column="v_file_path"/>
+        <result property="vFilePath" column="v_file_path"/>
         <result property="description" column="description"/>
         <result property="createdAt" column="created_at"/>
     </resultMap>

@@ -13,12 +13,13 @@ import com.pop.backend.entity.Users;
 public interface UsersMapper extends BaseMapper<Users> {
     
     Optional<Users> findByEmail(@Param("email") String email);
-
-    Optional<Users> findByEmailWithRole(@Param("email") String email);
-
+    
     Integer findMaxUserId();
+
+    int countUsersByRole(@Param("roleId") Integer roleId);
 
     Users getBasicUserInfoById(@Param ("userId") Integer userId);
 
     List<Users> listAllWithRoles();
+
 }

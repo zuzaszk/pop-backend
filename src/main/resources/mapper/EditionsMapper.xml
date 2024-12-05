@@ -7,4 +7,24 @@
         SELECT edition_id FROM projects WHERE project_id = #{projectId}
     </select>
 
+
+    <select id="getAverageGradesForLastEditions" resultType="java.util.HashMap">
+        WITH year_series AS (
+            SELECT generate_series(
+                           (SELECT MAX(year) - #{n} + 1 FROM editions),
+                           (SELECT MAX(year) FROM editions)
+                       ) AS year
+            )
+        SELECT
+            ys.year,
+            COALESCE(ROUND(AVG(e.score), 2), 0) AS average_grade
+        FROM year_series ys
+                 LEFT JOIN editions ed ON ys.year = ed.year
+                 LEFT JOIN projects p ON ed.edition_id = p.edition_id
+                 LEFT JOIN evaluations e ON p.project_id = e.project_id
+        WHERE ed.year IS NOT NULL
+        GROUP BY ys.year
+        ORDER BY ys.year DESC;
+    </select>
+
 </mapper>

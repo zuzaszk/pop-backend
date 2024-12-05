@@ -2,4 +2,40 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pop.backend.mapper.ProjectElementsMapper">
 
+
+    <select id="getElementsByProjectId" resultMap="ProjectElementBaseResultMap">
+        SELECT
+            *
+        FROM project_elements
+        WHERE project_id = #{projectId}
+    </select>
+
+
+    <select id="getUploadedElementTypesForProject" resultType="com.pop.backend.entity.ProjectElements">
+        SELECT pe.element_type_id
+        FROM project_elements pe
+        WHERE pe.project_id = #{projectId}
+    </select>
+
+
+    <select id="getByProjectIdAndElementTypeId" resultType="com.pop.backend.entity.ProjectElements">
+        SELECT *
+        FROM project_elements
+        WHERE project_id = #{projectId}
+          AND element_type_id = #{elementTypeId}
+    </select>
+
+
+
+    <resultMap id="ProjectElementBaseResultMap" type="com.pop.backend.entity.ProjectElements">
+        <id property="elementId" column="element_id"/>
+        <result property="elementTypeId" column="element_type_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="vFilePath" column="v_file_path"/>
+        <result property="description" column="description"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="vText" column="v_text"/>
+        <result property="vNumber" column="v_number"/>
+    </resultMap>
+
 </mapper>

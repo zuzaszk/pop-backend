@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * <p>
@@ -37,6 +39,9 @@ public class ProjectElementsServiceImpl extends ServiceImpl<ProjectElementsMappe
 
     @Override
     public void uploadElement(Integer projectId, Integer elementTypeId, MultipartFile file) {
+        // Query existing element to handle old records and files
+        ProjectElements existingElement = projectElementsMapper.getByProjectIdAndElementTypeId(projectId, elementTypeId);
+
         ProjectElements element = new ProjectElements();
         element.setProjectId(projectId);
         element.setElementTypeId(elementTypeId);
@@ -52,6 +57,13 @@ public class ProjectElementsServiceImpl extends ServiceImpl<ProjectElementsMappe
         element.setVFilePath(filePath);
 
         projectElementsMapper.insert(element);
+
+        // Delete old records and files after successful insertion
+        if (existingElement != null) {
+            // Delete old database record
+            projectElementsMapper.deleteById(existingElement.getElementId());
+        }
+
     }
 
     @Override
@@ -63,6 +75,12 @@ public class ProjectElementsServiceImpl extends ServiceImpl<ProjectElementsMappe
 
 
     }
+
+//    @Override
+//    public Map<String, Object> checkProjectElementsStatus(Integer projectId) {
+//
+//
+//    }
 
 
 }
