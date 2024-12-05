@@ -3,6 +3,7 @@ package com.pop.backend.controller;
 import com.pop.backend.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ public class InvitationsController {
             summary = "A Divine, Spiritual and Exclusive API, dedicate to The One and The Only :)",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public String sendProclamation() {
         String toEmail = "bamaliu@protonmail.com";
         //String toEmail = "269614@student.pwr.edu.pl";

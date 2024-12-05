@@ -5,6 +5,7 @@ import com.pop.backend.service.IDeadlinesService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +32,7 @@ public class DeadlinesController {
             summary = "Get hard/soft deadline by projectId and elementId",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Deadlines> getDeadlineByProjectIdAndElementTypeId(
             @RequestParam("projectId") Integer projectId,
             @RequestParam("elementTypeId") Integer elementTypeId) {
