@@ -45,6 +45,8 @@ public class Projects implements Serializable {
 
     private Integer year;
 
+    private String overview;
+
 
 
     @TableField(exist = false)
@@ -59,5 +61,8 @@ public class Projects implements Serializable {
 
     @TableField(exist = false)
     private List<Evaluations> evaluations;
+
+    @TableField(exist = false)
+    private List<Reviews> reviews;
 
 }

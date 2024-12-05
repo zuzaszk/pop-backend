@@ -6,6 +6,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 /**
  * <p>
  * </p>
@@ -18,6 +20,8 @@ public interface IProjectElementsService extends IService<ProjectElements> {
     void uploadElement(Integer projectId, Integer elementTypeId, MultipartFile file);
 
     ResponseEntity<Resource> retrieveFile(Integer projectElementId);
+
+    //Map<String, Object> checkProjectElementsStatus(Integer projectId);
 
 
 

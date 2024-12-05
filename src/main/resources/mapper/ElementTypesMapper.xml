@@ -2,4 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.pop.backend.mapper.ElementTypesMapper">
 
+
+    <select id="getRequiredElementTypes" resultType="com.pop.backend.entity.ElementTypes">
+        SELECT et.element_type_id, et.name, et.description, et.modality
+        FROM element_types et
+    </select>
+
+
+
+
+
+    <resultMap id="ElementTypeResultMap" type="com.pop.backend.entity.ElementTypes">
+        <id property="elementTypeId" column="element_type_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="modality" column="modality"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+
 </mapper>

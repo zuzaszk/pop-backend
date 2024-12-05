@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,6 +48,16 @@ public class CommonUtil {
                 throw new RuntimeException("Failed to create storage directory", e);
             }
         }
+
+        // delete existing files in the element type directory
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(storagePath)) {
+            for (Path existingFile : stream) {
+                Files.delete(existingFile);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to clear existing file in " + storagePath, e);
+        }
+
 
         Path dbFilePath = Paths.get(projectArc, elementTypesName, uniqueFileName);
         // Full path where the file will be saved
