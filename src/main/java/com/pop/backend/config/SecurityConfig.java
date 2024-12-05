@@ -1,7 +1,9 @@
 package com.pop.backend.config;
+
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,11 +16,8 @@ import com.pop.backend.auth.JwtFilter;
 import com.pop.backend.auth.OAuth2SuccessHandler;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
@@ -33,7 +32,8 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
-
+    @Value("${frontend_url}")
+    private String frontendUrl;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
