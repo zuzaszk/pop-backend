@@ -45,6 +45,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Optional<Users> existingUser = userService.findByEmailWithRole(email);
         // Optional<Users> existingUser = userService.findByEmail(email);
+        Integer currentRole;
 
         if (existingUser.isEmpty()) {
             user = new Users();
@@ -70,7 +71,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 List<UserRole> roles = userService.findUserRoles(user.getUserId());
                 System.out.println("User roles: " + roles);
                 user.setUserRole(roles);
-                userService.setCurrentRoleForUser(user.getUserId(), 5);
+                // userService.setCurrentRoleForUser(user.getUserId(), 5);
+                currentRole = 5;
                 System.out.println("User: " + userService.getCurrentRoleForUser(user.getUserId()));
                 userService.updateUser(user);
             }
@@ -82,7 +84,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             
             // List<UserRole> roles = userService.findUserRoles(user.getUserId());
             // System.out.println("User roles: " + roles);
-            System.out.println("User role: " + user.getUserRole().get(0).getRoleId());
+            // System.out.println("User role: " + user.getUserRole().get(0).getRoleId());
+            currentRole = user.getUserRole().get(0).getRoleId();
+            System.out.println("User role: " + currentRole);
             // user.setUserRole(roles);
             // System.out.println("User: " + user);
             // System.out.println("User roles: " + roles.get(0).getRoleId());
@@ -93,7 +97,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         existingUser = userService.findByEmailWithRole(email);
 
-        String jwtToken = tokenService.generateToken(user);
+        String jwtToken = tokenService.generateToken(user, currentRole);
         System.out.println("Generated JWT Token: " + jwtToken);
         // return new CustomOAuth2User(oAuth2User, jwtToken);
         // return oAuth2User;

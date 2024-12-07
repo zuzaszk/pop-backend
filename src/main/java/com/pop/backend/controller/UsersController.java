@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
@@ -33,6 +35,9 @@ public class UsersController {
     
     @Autowired
     IUsersService usersService;
+    
+    @Autowired
+    TokenService tokenService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -44,20 +49,31 @@ public class UsersController {
             tags = {"User"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<?> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String token = authorizationHeader.replace("Bearer ", "");
+            String email = tokenService.getEmailFromToken(token);
+            Users user = usersService.findByEmailWithRole(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body("User not found");
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body("Unauthorized");
         }
+        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String email = authentication.getName(); // Retrieve email from SecurityContext
-        Users currentUser = usersService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        // if (authentication == null || !authentication.isAuthenticated()) {
+        //     return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body("Unauthorized");
+        // }
 
-        currentUser.setUserRole(usersService.findUserRoles(currentUser.getUserId()));
+        // String email = authentication.getName(); // Retrieve email from SecurityContext
+        // Users currentUser = usersService.findByEmailWithRole(email)
+        //         .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return ResponseEntity.ok(currentUser);
+        // // currentUser.setUserRole(usersService.findUserRoles(currentUser.getUserId()));
+
+        // return ResponseEntity.ok(currentUser);
     }
 
     @GetMapping("/findUser")
@@ -161,19 +177,36 @@ public class UsersController {
         return ResponseEntity.ok("Switched to role: " + roleId);
     }
 
+    // @GetMapping("/currentRole")
+    // @Operation(
+    //         summary = "Get current role for user",
+    //         tags = {"User", "Role"}
+    // )
+    // @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    // public ResponseEntity<Integer> getCurrentRole(@RequestParam Integer userId) {
+    //     Integer currentRole = usersService.getCurrentRoleForUser(userId);
+    //     if (currentRole == null) {
+    //         return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(null);
+    //     }
+    //     return ResponseEntity.ok(currentRole);
+    // }
+
     @GetMapping("/currentRole")
     @Operation(
             summary = "Get current role for user",
             tags = {"User", "Role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<Integer> getCurrentRole(@RequestParam Integer userId) {
-        Integer currentRole = usersService.getCurrentRoleForUser(userId);
-        if (currentRole == null) {
-            return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(null);
+    public ResponseEntity<Integer> getCurrentRole(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String token = authorizationHeader.replace("Bearer ", "");
+            Integer currentRole = tokenService.getRoleFromToken(token);
+            return ResponseEntity.ok(currentRole);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(null);
         }
-        return ResponseEntity.ok(currentRole);
     }
+
 
     @PostMapping("/addRole")
     @Operation(
@@ -182,10 +215,10 @@ public class UsersController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> addRole(
-        @RequestParam("userId") Integer userId,
-        @RequestParam("roleId") Integer roleId,
-        @RequestParam(value = "projectId", required = false) Integer projectId,
-        @RequestParam(value = "editionId", required = false) Integer editionId) {
+        @RequestParam Integer userId,
+        @RequestParam Integer roleId,
+        @RequestParam(required = false) Integer projectId,
+        @RequestParam(required = false) Integer editionId) {
 
             List<UserRole> userRoles = usersService.findUserRoles(userId);
 

@@ -19,9 +19,10 @@ public class TokenService {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    public String generateToken(Users user) {
+    public String generateToken(Users user, Integer role) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // 1 day
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
@@ -44,6 +45,14 @@ public class TokenService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getEmailFromToken(String token) {
+        return validateToken(token).getSubject();
+    }
+
+    public Integer getRoleFromToken(String token) {
+        return (Integer) validateToken(token).get("role", Integer.class);
     }
 }
 
