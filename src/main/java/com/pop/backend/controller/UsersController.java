@@ -7,6 +7,7 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
+import com.pop.backend.auth.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -42,38 +44,26 @@ public class UsersController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-
     @GetMapping("/currentUser")
     @Operation(
             summary = "Get current user",
             tags = {"User"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> getCurrentUser(
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
         try {
-            String token = authorizationHeader.replace("Bearer ", "");
-            String email = tokenService.getEmailFromToken(token);
-            Users user = usersService.findByEmailWithRole(email)
+            String email = userDetails.getEmail();
+            Users currentUser = usersService.findByEmailWithRole(email)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(currentUser);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body("User not found");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body("Unauthorized");
         }
-        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // if (authentication == null || !authentication.isAuthenticated()) {
-        //     return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body("Unauthorized");
-        // }
-
-        // String email = authentication.getName(); // Retrieve email from SecurityContext
-        // Users currentUser = usersService.findByEmailWithRole(email)
-        //         .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // // currentUser.setUserRole(usersService.findUserRoles(currentUser.getUserId()));
-
-        // return ResponseEntity.ok(currentUser);
     }
 
     @GetMapping("/findUser")
@@ -162,19 +152,26 @@ public class UsersController {
             tags = {"User", "Role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<String> switchRole(@RequestParam Integer userId, @RequestParam Integer roleId) {
-        List<UserRole> userRoles = usersService.findUserRoles(userId);
+    public ResponseEntity<String> switchRole(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        // @RequestParam Integer userId,
+        @RequestParam Integer roleId
+        ) {
+            Integer userId = userDetails.getUserId();
+            List<UserRole> userRoles = usersService.findUserRoles(userId);
+            Users user = usersService.getById(userId);
 
-        boolean hasRole = userRoles.stream().anyMatch(
-            role -> role.getRoleId().equals(roleId)
-        );
+            boolean hasRole = userRoles.stream().anyMatch(
+                role -> role.getRoleId().equals(roleId)
+            );
 
-        if (!hasRole) {
-            return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("The user does not have the specified role.");
-        }
+            if (!hasRole) {
+                return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("The user does not have the specified role.");
+            }
 
-        usersService.setCurrentRoleForUser(userId, roleId);
-        return ResponseEntity.ok("Switched to role: " + roleId);
+            // usersService.setCurrentRoleForUser(userId, roleId);
+            String newToken = tokenService.generateToken(user, roleId);
+            return ResponseEntity.ok("Switched to role: " + roleId + "\nNew token: " + newToken);
     }
 
     // @GetMapping("/currentRole")
@@ -197,10 +194,14 @@ public class UsersController {
             tags = {"User", "Role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<Integer> getCurrentRole(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<Integer> getCurrentRole(
+        @AuthenticationPrincipal CustomUserDetails userDetails
+        // @RequestHeader("Authorization") String authorizationHeader
+    ) {
         try {
-            String token = authorizationHeader.replace("Bearer ", "");
-            Integer currentRole = tokenService.getRoleFromToken(token);
+            // String token = authorizationHeader.replace("Bearer ", "");
+            // Integer currentRole = tokenService.getRoleFromToken(token);
+            Integer currentRole = userDetails.getRole();
             return ResponseEntity.ok(currentRole);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.SC_UNAUTHORIZED).body(null);
@@ -215,6 +216,7 @@ public class UsersController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> addRole(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam Integer userId,
         @RequestParam Integer roleId,
         @RequestParam(required = false) Integer projectId,
@@ -246,6 +248,7 @@ public class UsersController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> editRole(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam Integer userId,
         @RequestParam Integer roleId,
         @RequestParam Integer projectId,
@@ -272,11 +275,17 @@ public class UsersController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> deleteRole(
-        @RequestParam Integer userId,
+        // @RequestHeader("Authorization") String authorizationHeader,
+        // @RequestParam Integer userId,
+        @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam Integer roleId,
         @RequestParam(required = false) Integer projectId,
         @RequestParam(required = false) Integer editionId) {
 
+            Integer userId = userDetails.getUserId();
+            Integer currentRole = userDetails.getRole();
+            // String authorizationHeader = userDetails.getToken();
+            // Integer currentRole = tokenService.getRoleFromToken(authorizationHeader.replace("Bearer ", ""));
             List<UserRole> userRoles = usersService.findUserRoles(userId);
 
             if (userRoles.size() == 1) {
@@ -288,8 +297,14 @@ public class UsersController {
                 return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("The user does not have the specified role.");
             }
 
+            String newToken = null;
+            if (currentRole.equals(roleId)) {
+                currentRole = userRoles.stream().filter(role -> !role.getRoleId().equals(roleId)).findFirst().get().getRoleId();
+                newToken = tokenService.generateToken(usersService.getById(userId), currentRole);
+            }
+
             usersService.deleteUserRole(userId, roleId, projectId, editionId);
-            return ResponseEntity.ok("Role deleted successfully.");
+            return ResponseEntity.ok("Role deleted successfully.\nNew token: " + newToken);
     }
 
 }
