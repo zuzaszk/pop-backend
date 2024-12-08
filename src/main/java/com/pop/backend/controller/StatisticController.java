@@ -1,6 +1,7 @@
 package com.pop.backend.controller;
 
 
+import com.pop.backend.auth.CustomUserDetails;
 import com.pop.backend.common.ApiResponse;
 import com.pop.backend.service.IEditionsService;
 import com.pop.backend.service.IProjectsService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -111,5 +113,28 @@ public class StatisticController {
     }
 
 
-
+    @GetMapping("/reviewerStatistics")
+    @Operation(
+            summary = "Get statistics for a reviewer",
+            tags = {"Reviewer", "Statistics"}
+    )
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getReviewerStatistics(
+            @AuthenticationPrincipal CustomUserDetails userDetails//,        
+            // @RequestParam(required = false) Integer reviewerId
+            ) {
+        // if (reviewerId == null) {
+        //     reviewerId = userDetails.getUserId();
+        // }
+        Integer reviewerId = userDetails.getUserId();
+        try {
+            Map<String, Object> statistics = statisticService.getReviewersStatistics(reviewerId);
+            System.out.println("Statistics: " + statistics);
+            return ResponseEntity.ok(new ApiResponse<>(true, "Reviewer statistics retrieved successfully.", statistics));
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, "Failed to retrieve reviewer statistics.", null));
+        }
+    }
 }

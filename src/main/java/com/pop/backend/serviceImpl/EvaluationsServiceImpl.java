@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -153,5 +154,56 @@ public class EvaluationsServiceImpl extends ServiceImpl<EvaluationsMapper, Evalu
 
 
 
+    @Override
+    public int getEvaluatedProjectsCount(int reviewerId) {
+        Integer evaluatedProjectsCount = evaluationsMapper.countEvaluatedProjectsByUser(reviewerId);
+        if (evaluatedProjectsCount == null) {
+            return 0;
+        }
+        // return evaluationsMapper.countEvaluatedProjectsByUser(reviewerId);
+        return evaluatedProjectsCount;
+    }
+
+
+
+    @Override
+    public int getNotEvaluatedProjectsCount(int reviewerId) {
+        Integer notEvaluatedProjectsCount = evaluationsMapper.countNotEvaluatedProjectsByUser(reviewerId);
+        if (notEvaluatedProjectsCount == null) {
+            return 0;
+        }
+        return notEvaluatedProjectsCount;
+        // return evaluationsMapper.countNotEvaluatedProjectsByUser(reviewerId);
+    }
+
+
+
+    @Override
+    public double getAverageScore(int reviewerId) {
+        Double averageScore = evaluationsMapper.averageScoreByUser(reviewerId);
+        if (averageScore == null) {
+            return 0.0;
+        }
+        // return evaluationsMapper.averageScoreByUser(reviewerId);
+        return averageScore;
+    }
+
+
+
+    @Override
+    public List<Map<String, Integer>> getScoreDistribution(int reviewerId) {
+        return evaluationsMapper.scoreDistributionByUser(reviewerId);
+    }
+
+
+
+    @Override
+    public double getAverageEvaluationTime(int reviewerId) {
+        Double averageHours = evaluationsMapper.averageEvaluationTimeByUser(reviewerId);
+        if (averageHours == null) {
+            return 0.0;
+        }
+        return averageHours;
+    }
 
 }
