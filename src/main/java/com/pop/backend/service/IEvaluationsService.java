@@ -7,6 +7,7 @@ import com.pop.backend.entity.Projects;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -25,6 +26,16 @@ public interface IEvaluationsService extends IService<Evaluations> {
 
 
     ApiResponse<String> updateEvaluation(Evaluations evaluation);
+
+    int getEvaluatedProjectsCount(int reviewerId);
+
+    int getNotEvaluatedProjectsCount(int reviewerId);
+
+    double getAverageScore(int reviewerId);
+
+    List<Map<String, Integer>> getScoreDistribution(int reviewerId);
+
+    double getAverageEvaluationTime(int reviewerId);
 
 
 
