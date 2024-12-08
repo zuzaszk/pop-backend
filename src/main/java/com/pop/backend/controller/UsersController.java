@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +26,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 
 @RestController
@@ -85,7 +82,8 @@ public class UsersController {
             tags = {"User"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<String> updateUser(@RequestParam Integer userId, @RequestBody Users updatedUser) {
+    public ResponseEntity<String> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, /*@RequestParam Integer userId,*/ @RequestBody Users updatedUser) {
+        Integer userId = userDetails.getUserId();
         Users existingUser = usersService.getBasicUserInfoById(userId);
         if (existingUser == null) {
             return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body("User not found.");
