@@ -15,4 +15,7 @@ public interface IStatisticService {
 
     Map<String, Object> getCounts(Integer roleId, Integer editionId);
 
+    Map<String, Object> getReviewersStatistics(Integer reviewerId);
+
+
 }
