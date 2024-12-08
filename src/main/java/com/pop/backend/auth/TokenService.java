@@ -23,6 +23,7 @@ public class TokenService {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("role", role)
+                .claim("id", user.getUserId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // 1 day
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
@@ -53,6 +54,10 @@ public class TokenService {
 
     public Integer getRoleFromToken(String token) {
         return (Integer) validateToken(token).get("role", Integer.class);
+    }
+
+    public Integer getIdFromToken(String token) {
+        return (Integer) validateToken(token).get("id", Integer.class);
     }
 }
 
