@@ -1,21 +1,23 @@
 package com.pop.backend.serviceImpl;
 
+import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.Invitations;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.mapper.InvitationsMapper;
 import com.pop.backend.mapper.UserRoleMapper;
 import com.pop.backend.mapper.UsersMapper;
+import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IInvitationsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pop.backend.service.IUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-// TODO
 @Service
 public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invitations> implements IInvitationsService {
 
@@ -23,11 +25,20 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     private InvitationsMapper invitationMapper;
 
     @Autowired
+    private TokenService tokenService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private IUsersService userService;
 
-    // TODO: param projectId ?
+    @Value("${frontend_url}")
+    private String frontendUrl;
+
+//    TODO: clean - move some logic to outside functions
     @Override
-    public Invitations sendInvitation(String emailAddress, String roleName) {
+    public Invitations sendInvitation(String emailAddress, String roleName, Integer projectId, Integer editionId) {
         Invitations invitation = new Invitations();
         invitation.setEmailAddress(emailAddress);
         invitation.setRoleName(roleName);
@@ -37,10 +48,23 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         invitation.setExpirationDate(LocalDateTime.now().plusDays(14)); // 14 days validity by default
         invitation.setIsArchived(false);
 
-        // TODO: Generate an invitation link (mock example, replace with actual generation logic)
-        invitation.setInvitationLink("mocklink123");
+        // TODO: Token validation !
+        String token = tokenService.generateInvitationToken(emailAddress, roleName, projectId, editionId);
+        String invitationLink = frontendUrl + "/#/register?token=" + token;
+        System.out.println("Invitation link: " + invitationLink);
+        invitation.setInvitationLink(invitationLink);
 
         invitationMapper.insert(invitation);
+
+//        TODO!:
+//        org.springframework.mail.MailSendException: Mail server connection failed. Failed messages: jakarta.mail.MessagingException: Could not convert socket to TLS;
+//        nested exception is:
+//        javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target; message exception details (1) are:
+//        Failed message 1:
+//        jakarta.mail.MessagingException: Could not convert socket to TLS;
+
+        emailService.sendEmail(emailAddress, "Registration link",
+                "Welcome to PoP! You’ve been invited to join. Please register using this link:\n" + invitationLink);
         return invitation;
     }
 
@@ -80,7 +104,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         return invitation != null && invitation.getExpirationDate().isBefore(LocalDateTime.now());
     }
 
-////    TODO
+////    TODO: move to user
 //    @Override
 //    @Transactional
 //    public void updateUserRole(int userId, int newRoleId) {
