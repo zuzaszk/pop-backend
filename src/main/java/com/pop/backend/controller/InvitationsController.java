@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
-//TODO
 @RestController
 @RequestMapping("/invitation")
 public class InvitationsController {
@@ -24,9 +23,11 @@ public class InvitationsController {
     @PostMapping("/send")
     public ResponseEntity<Invitations> sendInvitation(
             @RequestParam String email,
-            @RequestParam(required = false) String roleName
+            @RequestParam(required = false) String roleName,
+            @RequestParam Integer projectId,
+            @RequestParam Integer editionId
             ) {
-        Invitations invitation = invitationsService.sendInvitation(email, roleName);
+        Invitations invitation = invitationsService.sendInvitation(email, roleName, projectId, editionId);
         return ResponseEntity.ok(invitation);
     }
 

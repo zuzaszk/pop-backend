@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface IInvitationsService extends IService<Invitations> {
 
-//    TODO: Add projectId to the whole flow
     /**
      * Sends an invitation to the specified email address.
      *
-     * @param emailAddress The recipient's email address.
-     * @param roleName The role to be assigned to the new user.
+     * @param emailAddress The email address of the recipient who is being invited.
+     * @param roleName The name of the role to assign to the recipient (e.g., "student", "supervisor").
+     * @param projectId The ID of the project associated with the invitation (can be null if not applicable).
+     * @param editionId The ID of the edition associated with the invitation (can be null if not applicable).
      * @return The created invitation.
      */
-    Invitations sendInvitation(String emailAddress, String roleName);
+    Invitations sendInvitation(String emailAddress, String roleName, Integer projectId, Integer editionId);
 
     /**
      * Marks an invitation as accepted.

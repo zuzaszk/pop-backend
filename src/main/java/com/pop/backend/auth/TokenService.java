@@ -41,7 +41,18 @@ public class TokenService {
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
-    
+
+    public String generateInvitationToken(String email, String roleName, Integer projectId, Integer editionId) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("role_name", roleName)
+                .claim("project_id", projectId)
+                .claim("edition_id", editionId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1209600000))  // 14 days
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     public Claims validateToken(String token) {
         return Jwts.parserBuilder()
