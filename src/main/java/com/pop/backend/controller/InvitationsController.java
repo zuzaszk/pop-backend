@@ -1,49 +1,40 @@
 package com.pop.backend.controller;
 
+import com.pop.backend.entity.Invitations;
 import com.pop.backend.service.EmailService;
+import com.pop.backend.service.IInvitationsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
 
-/**
- * <p>
- * </p>
- *
- * @author yl
- * @since 2024-11-12
- */
+//TODO
 @RestController
-@RequestMapping("/invitations")
+@RequestMapping("/invitation")
 public class InvitationsController {
 
-
-
     @Autowired
-    private EmailService emailService;
+    private final IInvitationsService invitationsService;
 
-
-
-
-
-    @GetMapping("/sendProclamation")
-    @Operation(
-            summary = "A Divine, Spiritual and Exclusive API, dedicate to The One and The Only :)",
-            description = "Author: YL"
-    )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public String sendProclamation() {
-        String toEmail = "bamaliu@protonmail.com";
-        //String toEmail = "269614@student.pwr.edu.pl";
-        emailService.sendProclamationEmail(toEmail);
-        return "Proclamation email sent to " + toEmail;
+    public InvitationsController(IInvitationsService invitationsService) {
+        this.invitationsService = invitationsService;
     }
 
+    @PostMapping("/send")
+    public ResponseEntity<Invitations> sendInvitation(
+            @RequestParam String email,
+            @RequestParam(required = false) String roleName
+            ) {
+        Invitations invitation = invitationsService.sendInvitation(email, roleName);
+        return ResponseEntity.ok(invitation);
+    }
 
-
-
+    @PostMapping("/accept")
+    public ResponseEntity<String> acceptInvitation(@RequestParam Integer invitationId) {
+        return invitationsService.acceptInvitation(invitationId) ?
+                ResponseEntity.ok("Invitation accepted.") :
+                ResponseEntity.badRequest().body("Failed to accept invitation.");
+    }
 
 }
