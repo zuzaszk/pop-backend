@@ -11,8 +11,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-
-
 @Data
 @TableName("invitations")
 public class Invitations implements Serializable {
@@ -22,7 +20,7 @@ public class Invitations implements Serializable {
     @TableId(value = "invitation_id", type = IdType.AUTO)
     private Integer invitationId;
 
-    private Integer userId;
+    private Integer userId; // TODO: Assign after registration.
 
     private String invitationLink;
 
@@ -40,10 +38,6 @@ public class Invitations implements Serializable {
 
     private String emailAddress;
 
+    private String roleName;
 
-    @TableField(exist = false)
-    private Users user;
-
-    @TableField(exist = false)
-    private UserRole userRole;
 }
