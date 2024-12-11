@@ -20,6 +20,7 @@ public class InvitationsController {
         this.invitationsService = invitationsService;
     }
 
+//    Role name like "spectator", "student"
     @PostMapping("/send")
     public ResponseEntity<Invitations> sendInvitation(
             @RequestParam String email,
@@ -31,6 +32,7 @@ public class InvitationsController {
         return ResponseEntity.ok(invitation);
     }
 
+//    After registration
     @PostMapping("/accept")
     public ResponseEntity<String> acceptInvitation(@RequestParam Integer invitationId) {
         return invitationsService.acceptInvitation(invitationId) ?

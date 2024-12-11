@@ -30,15 +30,15 @@ public interface IInvitationsService extends IService<Invitations> {
      * @param invitationId The ID of the invitation to decline.
      * @return True if the invitation was successfully updated, false otherwise.
      */
-    boolean declineInvitation(Integer invitationId);
+//    boolean declineInvitation(Integer invitationId);
 
     /**
      * Archives an invitation, marking it as no longer active.
      *
-     * @param invitationId The ID of the invitation to archive.
+     * @param invitation The invitation to archive.
      * @return True if the invitation was successfully archived, false otherwise.
      */
-    boolean archiveInvitation(Integer invitationId);
+    boolean archiveInvitation(Invitations invitation);
 
     /**
      * Checks if an invitation is expired.

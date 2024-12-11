@@ -1,5 +1,6 @@
 package com.pop.backend.serviceImpl;
 
+import com.pop.backend.auth.AuthResponse;
 import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.Invitations;
 import com.pop.backend.entity.UserRole;
@@ -11,12 +12,19 @@ import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IInvitationsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pop.backend.service.IUsersService;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invitations> implements IInvitationsService {
@@ -33,6 +41,24 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     @Autowired
     private IUsersService userService;
 
+    private static final Map<Integer, String> roleMap = new HashMap<>();
+    static {
+        roleMap.put(1, "student");
+        roleMap.put(2, "supervisor");
+        roleMap.put(3, "reviewer");
+        roleMap.put(4, "chair");
+        roleMap.put(5, "spectator");
+    }
+
+    public int getRoleIdByName(String roleName) {
+        for (Map.Entry<Integer, String> entry : roleMap.entrySet()) {
+            if (entry.getValue().equalsIgnoreCase(roleName)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
     @Value("${frontend_url}")
     private String frontendUrl;
 
@@ -44,25 +70,14 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         invitation.setRoleName(roleName);
         invitation.setState(0); // Initial state: 0 = Pending
         invitation.setCreatedAt(LocalDateTime.now());
-        // TODO: Logic for when the invitation expires: move to archived && change state to expired (State: 3 = expired)
+        // TODO: Logic for when the invitation expires: move to archived && change state to expired
         invitation.setExpirationDate(LocalDateTime.now().plusDays(14)); // 14 days validity by default
         invitation.setIsArchived(false);
-
-        // TODO: Token validation !
         String token = tokenService.generateInvitationToken(emailAddress, roleName, projectId, editionId);
         String invitationLink = frontendUrl + "/#/register?token=" + token;
         System.out.println("Invitation link: " + invitationLink);
         invitation.setInvitationLink(invitationLink);
-
         invitationMapper.insert(invitation);
-
-//        TODO!:
-//        org.springframework.mail.MailSendException: Mail server connection failed. Failed messages: jakarta.mail.MessagingException: Could not convert socket to TLS;
-//        nested exception is:
-//        javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target; message exception details (1) are:
-//        Failed message 1:
-//        jakarta.mail.MessagingException: Could not convert socket to TLS;
-
         emailService.sendEmail(emailAddress, "Registration link",
                 "Welcome to PoP! You’ve been invited to join. Please register using this link:\n" + invitationLink);
         return invitation;
@@ -75,22 +90,24 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
             return false;
         }
         invitation.setState(1); // State: 1 = Accepted
-        return invitationMapper.updateById(invitation) > 0; // returns number of rows affected: 0 or 1 (false or true)
-    }
-
-    @Override
-    public boolean declineInvitation(Integer invitationId) {
-        Invitations invitation = invitationMapper.selectById(invitationId);
-        if (invitation == null || invitation.getIsArchived() || isInvitationExpired(invitationId)) {
-            return false;
-        }
-        invitation.setState(2); // State: 2 = Declined
+        archiveInvitation(invitation);
+        String token = extractToken(invitation.getInvitationLink());
+        Claims claims = tokenService.validateToken(token);
+        String email = claims.getSubject();
+        String roleName = claims.get("role_name", String.class);
+        Integer projectId = claims.get("project_id", Integer.class);
+        Integer editionId = claims.get("edition_id", Integer.class);
+        Optional<Users> user = userService.findByEmailWithRole(email);
+        Integer userId = user.map(u -> u.getUserId()).orElse(null);
+        invitation.setUserId(userId);
+        Integer roleId = getRoleIdByName(roleName);
+        Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
+        invitation.setUserRoleId(userRoleId);
         return invitationMapper.updateById(invitation) > 0;
     }
 
     @Override
-    public boolean archiveInvitation(Integer invitationId) {
-        Invitations invitation = invitationMapper.selectById(invitationId);
+    public boolean archiveInvitation(Invitations invitation) {
         if (invitation == null) {
             return false;
         }
@@ -104,28 +121,12 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         return invitation != null && invitation.getExpirationDate().isBefore(LocalDateTime.now());
     }
 
-////    TODO: move to user
-//    @Override
-//    @Transactional
-//    public void updateUserRole(int userId, int newRoleId) {
-//        Users user = userMapper.selectById(userId);
-//        if (user == null) {
-//            throw new IllegalArgumentException("User with ID " + userId + " does not exist.");
-//        }
-//
-//        UserRole role = userRoleMapper.selectById(newRoleId);
-//        if (role == null) {
-//            throw new IllegalArgumentException("Role with ID " + newRoleId + " does not exist.");
-//        }
-//
-////        TODO: fucked up parameters
-////        user.updateUserRole(userId, newRoleId);
-//        int rowsUpdated = userMapper.updateById(user);
-//        if (rowsUpdated != 1) {
-//            throw new RuntimeException("Failed to update user role for user ID " + userId);
-//        }
-//
-//        System.out.println("Updated role for user ID " + userId + " to role ID " + newRoleId);
-//    }
+    public String extractToken(String url) {
+        String tokenPrefix = "http://localhost:5173/#/register?token=";
+        if (url.startsWith(tokenPrefix)) {
+            return url.substring(tokenPrefix.length());
+        }
+        return null;
+    }
 
 }
