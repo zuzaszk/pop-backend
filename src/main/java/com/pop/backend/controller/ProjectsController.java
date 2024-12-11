@@ -97,6 +97,7 @@ public class ProjectsController {
             summary = "Get projects connected to a user in a certain role, optional filtered by edition and language",
             description = "Fetch projects connected to a specific user and role, with optional filters for edition and language."
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Projects>>> getProjectsByUserRole(
             @RequestParam("userId") Integer userId,
             @RequestParam("roleId") Integer roleId,

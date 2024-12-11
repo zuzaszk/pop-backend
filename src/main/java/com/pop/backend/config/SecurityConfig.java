@@ -53,7 +53,9 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                    "/", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/login"
+                    "/",
+                    "/swagger-ui/**", "/v3/api-docs/**",
+                    "/auth/**", "/login", "/usos/**"
                     ).permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
@@ -62,9 +64,7 @@ public class SecurityConfig {
                     .baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService))
-                .successHandler(OAuth2SuccessHandler)
-                // .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
-                )
+                .successHandler(OAuth2SuccessHandler))
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
                 .permitAll())
