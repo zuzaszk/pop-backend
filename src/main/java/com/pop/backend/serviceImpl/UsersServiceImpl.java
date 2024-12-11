@@ -113,5 +113,20 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             throw new IllegalArgumentException("No matching user role found for update.");
         }
     }
+
+    @Override
+    public Integer updateUserRoleFull(Integer userId, Integer roleId, Integer newRoleId, Integer newProjectId,
+                                   Integer newEditionId) {
+        UserRole userRole = userRoleMapper.findRole(userId, roleId, null, null);
+        if (userRole != null) {
+            userRole.setRoleId(newRoleId);
+            userRole.setProjectId(newProjectId);
+            userRole.setEditionId(newEditionId);
+            userRoleMapper.updateById(userRole);
+            return userRole.getUserRoleId();
+        } else {
+            throw new IllegalArgumentException("No matching user role found for update.");
+        }
+    }
     
 }
