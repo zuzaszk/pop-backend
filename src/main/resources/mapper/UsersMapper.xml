@@ -10,6 +10,11 @@
         WHERE email = #{email}
     </select>
 
+    <select id="findByUsosId" resultType="com.pop.backend.entity.Users">
+        SELECT * FROM users
+        WHERE usos_id = #{usosId}
+    </select>
+
     <resultMap id="userWithRolesMap" type="com.pop.backend.entity.Users">
         <!-- User fields -->
         <id property="userId" column="user_id"/>

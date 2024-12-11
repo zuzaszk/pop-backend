@@ -34,4 +34,6 @@ public interface IUsersService extends IService<Users> {
     void deleteUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId);
 
     void updateUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId, Integer newRoleId);
+
+    Optional<Users> findByUsosId(String id);
 }

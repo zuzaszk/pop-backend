@@ -113,5 +113,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             throw new IllegalArgumentException("No matching user role found for update.");
         }
     }
+
+    @Override
+    public Optional<Users> findByUsosId(String id) {
+        return Optional.ofNullable(usersMapper.findByUsosId(id).orElse(null));
+    }
     
 }
