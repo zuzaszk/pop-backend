@@ -82,17 +82,18 @@
         SELECT
         p.project_id AS projectId,
         p.title AS projectName,
-        e.evaluation_role_id AS evaluationRoleId,
-        COUNT(e.score) AS evaluationCount,
-        AVG(e.score) AS averageScore
+        COUNT(e.score) AS totalEvaluationCount,
+        SUM(e.score * r.weight) / SUM(r.weight) AS finalWeightedScore
         FROM projects p
         LEFT JOIN evaluations e ON p.project_id = e.project_id
+        LEFT JOIN evaluation_roles r ON e.evaluation_role_id = r.role_id
         <if test="editionId != null">
             WHERE p.edition_id = #{editionId}
         </if>
-        GROUP BY p.project_id, p.title, e.evaluation_role_id
+        GROUP BY p.project_id, p.title
         ORDER BY p.project_id
     </select>
+
 
 
     <select id="getProjectsByUserRole" resultMap="ProjectBaseResultMap">

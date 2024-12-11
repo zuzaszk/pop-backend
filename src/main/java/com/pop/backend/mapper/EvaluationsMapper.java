@@ -23,9 +23,12 @@ public interface EvaluationsMapper extends BaseMapper<Evaluations> {
 
     Evaluations hasUserAlreadyEvaluated(Integer projectId, Integer userId);
 
+    Evaluations getEvaluationByUser(@Param("projectId") Integer projectId,
+                                      @Param("userId") Integer userId);
+
     Evaluations getEvaluationByUserProjectEvaluationRole(@Param("projectId") Integer projectId,
-                                      @Param("userId") Integer userId,
-                                      @Param("evaluationRoleId") Integer evaluationRoleId);
+                                                         @Param("userId") Integer userId,
+                                                         @Param("evaluationRoleId") Integer evaluationRoleId);
 
 
 }

@@ -30,7 +30,6 @@ public class ProjectElementsController {
             summary = "Upload elements",
             description = "Author: YL"
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> uploadElement(
             @RequestParam("projectId") Integer projectId,
             @RequestParam("elementTypeId") Integer elementTypeId,
@@ -46,7 +45,6 @@ public class ProjectElementsController {
             summary = "Retrieve element :)",
             description = "Author: YL"
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Resource> retrieveFile(
                 @RequestParam("projectElementId") Integer projectElementId) {
 

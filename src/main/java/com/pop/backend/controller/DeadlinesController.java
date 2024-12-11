@@ -32,7 +32,6 @@ public class DeadlinesController {
             summary = "Get hard/soft deadline by projectId and elementId",
             description = "Author: YL"
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Deadlines> getDeadlineByProjectIdAndElementTypeId(
             @RequestParam("projectId") Integer projectId,
             @RequestParam("elementTypeId") Integer elementTypeId) {

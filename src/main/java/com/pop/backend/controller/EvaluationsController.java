@@ -104,11 +104,10 @@ public class EvaluationsController {
     )
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(
             @RequestParam("projectId") Integer projectId,
-            @RequestParam("userId") Integer userId,
-            @RequestParam("evaluationRoleId") Integer evaluationRoleId) {
+            @RequestParam("userId") Integer userId) {
 
         try {
-            Evaluations evaluation = evaluationsService.getEvaluationByUserProjectEvaluationRole(projectId, userId, evaluationRoleId);
+            Evaluations evaluation = evaluationsService.getEvaluationByUser(projectId, userId);
             if (evaluation != null) {
                 return ResponseEntity.ok(new ApiResponse<>(true, "Evaluation retrieved successfully.", evaluation));
             } else {
