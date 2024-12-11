@@ -85,10 +85,16 @@ public class USOSController {
         String lastName = (String) userInfo.get("last_name");
         Integer studentStatus = (Integer) userInfo.get("student_status");
 
+        session.removeAttribute("requestToken");
+        session.removeAttribute("accessToken");
+
         if (userService.findByUsosId(id).isPresent()) {
             Users user = userService.findByUsosId(id).get();
+            user = userService.findByEmailWithRole(user.getEmail()).get();
             String loginToken = tokenService.generateToken(user, user.getUserRole().get(0).getRoleId());
-            return ResponseEntity.ok().header("Authorization", loginToken).build();
+            String frontendUrl = "http://localhost:5173/#/login-success?token=" + loginToken;
+            // return ResponseEntity.ok().header("Authorization", loginToken).build();
+            return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(frontendUrl)).build();
         }
 
         String token = tokenService.generateTemporaryToken(Map.of(
@@ -121,6 +127,7 @@ public class USOSController {
         String id = (String) userInfo.get("id");
         String firstName = (String) userInfo.get("firstName");
         String lastName = (String) userInfo.get("lastName");
+        String name = firstName + " " + lastName;
         Integer studentStatus = (Integer) userInfo.get("studentStatus");
 
         Users user;
@@ -135,6 +142,7 @@ public class USOSController {
             user.setEmail(email);
             user.setFirstName(firstName);
             user.setLastName(lastName);
+            user.setName(name);
             user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
             userService.registerUser(user);
