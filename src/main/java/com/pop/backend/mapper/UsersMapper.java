@@ -15,7 +15,7 @@ public interface UsersMapper extends BaseMapper<Users> {
     Optional<Users> findByEmail(@Param("email") String email);
 
     Optional<Users> findByEmailWithRole(@Param("email") String email);
-
+    
     Integer findMaxUserId();
 
     int countUsersByRole(@Param("roleId") Integer roleId);

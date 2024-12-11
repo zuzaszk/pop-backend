@@ -52,6 +52,8 @@ public class AuthController {
         System.out.println("Register endpoint hit");
         System.out.println(request);
 
+        Integer currentRole;
+
         try {
             if (usersService.findByEmail(request.getEmail()).isPresent()) {
                 return ResponseEntity
@@ -85,13 +87,15 @@ public class AuthController {
                 List<UserRole> roles = usersService.findUserRoles(newUser.getUserId());
                 System.out.println("User roles: " + roles);
                 newUser.setUserRole(roles);
-                usersService.setCurrentRoleForUser(newUser.getUserId(), 5);
+                // usersService.setCurrentRoleForUser(newUser.getUserId(), 5);
+                currentRole = 5;
+                
                 usersService.updateUser(newUser);
             }
 
             // return ResponseEntity.ok("User registered successfully!");
 
-            String token = tokenService.generateToken(newUser);
+            String token = tokenService.generateToken(newUser, currentRole);
 
             System.out.println("User registered successfully!");
             System.out.println("Token: " + token);
@@ -113,6 +117,7 @@ public class AuthController {
         System.out.println("Login endpoint hit");
         System.out.println(request);
         
+        Integer currentRole;
         try {
             Optional<Users> userOptional = usersService.findByEmailWithRole(request.getEmail());
             if (userOptional.isEmpty()) {
@@ -131,11 +136,11 @@ public class AuthController {
             // System.out.println("User: " + user);
             // System.out.println("User roles: " + user.getUserRole().get(0).getRoleId());
             // usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
-            usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
-        
+            // usersService.setCurrentRoleForUser(user.getUserId(), user.getUserRole().get(0).getRoleId());
+            currentRole = user.getUserRole().get(0).getRoleId();
             usersService.updateUser(user);
 
-            String token = tokenService.generateToken(user);
+            String token = tokenService.generateToken(user, currentRole);
 
             System.out.println("User logged in successfully!");
             System.out.println("Token: " + token);

@@ -39,7 +39,6 @@ public class EvaluationsController {
             summary = "List all projects that assigned to supervisor/reviewer to evaluate",
             description = "Author: YL"
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
             @RequestParam("userId") Integer userId,
             @RequestParam(value = "editionId", required = false) Integer editionId) {
@@ -118,6 +117,5 @@ public class EvaluationsController {
                     .body(new ApiResponse<>(false, "An error occurred while retrieving the score.", null));
         }
     }
-
 
 }
