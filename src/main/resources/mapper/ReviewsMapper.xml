@@ -5,9 +5,16 @@
 
     <select id="getReviewsByProjectId" resultMap="ReviewBaseResultMap">
         SELECT
-            *
-        FROM reviews
-        WHERE project_id = #{projectId}
+            r.*,
+            CONCAT(u.first_name, ' ', u.last_name) AS fullname
+        FROM
+            reviews r
+                LEFT JOIN
+            users u
+            ON
+                r.user_id = u.user_id
+        WHERE
+            r.project_id = #{projectId}
     </select>
 
 
@@ -34,6 +41,7 @@
         <result property="review" column="review"/>
         <result property="isPublic" column="is_public"/>
         <result property="createdAt" column="created_at"/>
+        <result column="fullname" property="fullname" />
     </resultMap>
 
 
