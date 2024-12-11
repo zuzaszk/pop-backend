@@ -24,6 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
     //     this.tokenService = tokenService;
     // }
 
+    @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -38,9 +39,13 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             var claims = tokenService.validateToken(token);
             String email = claims.getSubject(); // Extract user email or ID
-            
+            Integer role = (Integer) claims.get("role", Integer.class);
+            Integer id = (Integer) claims.get("id", Integer.class);
             // Set authentication into SecurityContext
-            var authentication = new UsernamePasswordAuthenticationToken(email, null, List.of());
+            // var authentication = new UsernamePasswordAuthenticationToken(email, null, List.of());
+            var authentication = new UsernamePasswordAuthenticationToken(
+                new CustomUserDetails(id, email, role), null, List.of()
+            );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
