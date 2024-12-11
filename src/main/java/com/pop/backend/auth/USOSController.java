@@ -98,7 +98,7 @@ public class USOSController {
             "studentStatus", studentStatus
         ));
 
-        String frontendUrl = "http://localhost:5173?token=" + token;
+        String frontendUrl = "http://localhost:5173/#/finalize-user?token=" + token;
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(frontendUrl)).build();
     }
 
