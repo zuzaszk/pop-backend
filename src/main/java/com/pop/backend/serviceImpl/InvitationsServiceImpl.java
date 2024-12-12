@@ -1,26 +1,19 @@
 package com.pop.backend.serviceImpl;
 
-import com.pop.backend.auth.AuthResponse;
 import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.Invitations;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.mapper.InvitationsMapper;
-import com.pop.backend.mapper.UserRoleMapper;
-import com.pop.backend.mapper.UsersMapper;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IInvitationsService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pop.backend.service.IUsersService;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,7 +94,18 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         Integer userId = user.map(u -> u.getUserId()).orElse(null);
         invitation.setUserId(userId);
         Integer roleId = getRoleIdByName(roleName);
-        Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
+        
+        UserRole userRole = new UserRole();
+
+        userRole.setUserId(userId);
+        userRole.setRoleId(roleId);
+        userRole.setProjectId(projectId);
+        userRole.setEditionId(editionId);
+
+        userService.insertUserRole(userRole);
+
+        Integer userRoleId = userRole.getUserRoleId();
+        // Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
         invitation.setUserRoleId(userRoleId);
         return invitationMapper.updateById(invitation) > 0;
     }
@@ -127,6 +131,11 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
             return url.substring(tokenPrefix.length());
         }
         return null;
+    }
+
+    @Override
+    public Invitations findInvitationByInvitationLink(String invitationLink) {
+        return invitationMapper.selectOne(new QueryWrapper<Invitations>().eq("invitation_link", invitationLink));
     }
 
 }

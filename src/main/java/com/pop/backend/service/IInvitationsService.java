@@ -48,4 +48,11 @@ public interface IInvitationsService extends IService<Invitations> {
      */
     boolean isInvitationExpired(Integer invitationId);
 
+    /**
+     * Finds an invitation by its invitation link.
+     *
+     * @param invitationLink The invitation link to search for.
+     * @return The invitation with the specified invitation link, or null if not found.
+     */
+    Invitations findInvitationByInvitationLink(String invitationLink);
 }
