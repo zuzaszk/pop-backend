@@ -62,9 +62,6 @@ public class AuthController {
 
             String token = tokenService.generateToken(newUser, 5); // 5 (spectator) is the default role for new users
 
-            System.out.println("User registered successfully!");
-            System.out.println("Token: " + token);
-
             return ResponseEntity.ok(new AuthResponse("User registered successfully!", token));
         } catch (Exception e) {
             e.printStackTrace();

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +27,6 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Autowired
     private UserRoleMapper userRoleMapper;
-
-    private final Map<Integer, Integer> currentRoleMap = new HashMap<>();
     
     @Override
     public Optional<Users> findByEmail(String email) {
@@ -95,16 +94,6 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
-    public void setCurrentRoleForUser(Integer userId, Integer roleId) {
-        currentRoleMap.put(userId, roleId);
-    }
-
-    @Override
-    public Integer getCurrentRoleForUser(Integer userId) {
-        return currentRoleMap.get(userId);
-    }
-
-    @Override
     public void updateUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId,
             Integer newRoleId) {
         UserRole userRole = userRoleMapper.findRole(userId, roleId, projectId, editionId);
@@ -129,6 +118,21 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
+    public Users createOAuth2User(OAuth2User oAuth2User) {
+        Users user = new Users();
+
+        user.setEmail(oAuth2User.getAttribute("email"));
+        user.setName(oAuth2User.getAttribute("family_name") + " " + oAuth2User.getAttribute("given_name"));
+        user.setFirstName(oAuth2User.getAttribute("given_name"));
+        user.setLastName(oAuth2User.getAttribute("family_name"));
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+
+        return user;
+
+    }
+
+    @Override
     public UserRole assignRoleToUser(Integer userId, Integer roleId, Integer editionId, Integer projectId) {
         UserRole userRole = new UserRole();
         
@@ -141,17 +145,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         return userRole;
     }
 
-    // @Override
-    // public Users createNewUser(String usosId, String email, String password, String name, String firstName, String lastName,
-    //         Timestamp createdAt, Timestamp lastLoginAt) {
-    //     Users user = new Users(usosId, email, name, createdAt, lastLoginAt, password, firstName, lastName);
-    //     return user;
-    // }
-
-
     @Override
     public Optional<Users> findByUsosId(String id) {
         return Optional.ofNullable(usersMapper.findByUsosId(id).orElse(null));
     }
+
     
 }
