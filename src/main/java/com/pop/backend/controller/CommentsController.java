@@ -32,6 +32,7 @@ public class CommentsController {
             summary = "Supervisor and reviewer add comments to element",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addComment(@RequestBody Comments comments) {
         ApiResponse<String> response = commentsService.addComment(comments);
         if (response.isSuccess()) {
@@ -47,6 +48,7 @@ public class CommentsController {
             summary = "Get comments by elementId",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Comments>>> getCommentsByElementId(
             @RequestParam("elementId") Integer elementId) {
         try {

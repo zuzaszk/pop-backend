@@ -8,5 +8,30 @@
     "name": "backend_url",
     "type": "java.lang.String",
     "description": "URL of the backend application"
+  },
+  {
+    "name": "jwt.secret",
+    "type": "java.lang.String",
+    "description": "Secret key for JWT token"
+  },
+  {
+    "name": "storage.directory",
+    "type": "java.lang.String",
+    "description": "Path to the directory where files are stored"
+  },
+  {
+    "name": "usos.api.base.url",
+    "type": "java.lang.String",
+    "description": "URL of the USOS API"
+  },
+  {
+    "name": "usos.api.key",
+    "type": "java.lang.String",
+    "description": "Key for the USOS API"
+  },
+  {
+    "name": "usos.api.secret",
+    "type": "java.lang.String",
+    "description": "Secret for the USOS API"
   }
 ]}
