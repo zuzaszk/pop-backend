@@ -172,19 +172,6 @@ public class UsersController {
             return ResponseEntity.ok("Switched to role: " + roleId + "\nNew token: " + newToken);
     }
 
-    // @GetMapping("/currentRole")
-    // @Operation(
-    //         summary = "Get current role for user",
-    //         tags = {"User", "Role"}
-    // )
-    // @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    // public ResponseEntity<Integer> getCurrentRole(@RequestParam Integer userId) {
-    //     Integer currentRole = usersService.getCurrentRoleForUser(userId);
-    //     if (currentRole == null) {
-    //         return ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body(null);
-    //     }
-    //     return ResponseEntity.ok(currentRole);
-    // }
 
     @GetMapping("/currentRole")
     @Operation(
@@ -194,11 +181,8 @@ public class UsersController {
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Integer> getCurrentRole(
         @AuthenticationPrincipal CustomUserDetails userDetails
-        // @RequestHeader("Authorization") String authorizationHeader
     ) {
         try {
-            // String token = authorizationHeader.replace("Bearer ", "");
-            // Integer currentRole = tokenService.getRoleFromToken(token);
             Integer currentRole = userDetails.getRole();
             return ResponseEntity.ok(currentRole);
         } catch (Exception e) {

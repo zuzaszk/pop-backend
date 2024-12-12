@@ -3,6 +3,8 @@ package com.pop.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pop.backend.auth.RegistrationRequest;
 import com.pop.backend.entity.UserRole;
@@ -12,13 +14,9 @@ public interface IUsersService extends IService<Users> {
 
     Optional<Users> findByEmail(String email);
 
-    Users createUserFromRequest(
-        RegistrationRequest request
-        // String usosId,
-        // String email, String password,
-        // String name, String firstName, String lastName,
-        // Timestamp createdAt, Timestamp lastLoginAt
-        );
+    Users createUserFromRequest(RegistrationRequest request);
+
+    Users createOAuth2User(OAuth2User oAuth2User);
 
     UserRole assignRoleToUser(Integer userId, Integer roleId, Integer editionId, Integer projectId);
 
@@ -37,10 +35,6 @@ public interface IUsersService extends IService<Users> {
     List<Users> listAll();
 
     Users getBasicUserInfoById(Integer userId);
-
-    void setCurrentRoleForUser(Integer userId, Integer roleId);
-
-    Integer getCurrentRoleForUser(Integer userId);
 
     void deleteUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId);
 
