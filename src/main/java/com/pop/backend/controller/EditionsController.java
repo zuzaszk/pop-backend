@@ -48,6 +48,7 @@ public class EditionsController {
             summary = "For Chair adding new edition",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addEdition(@RequestBody Editions edition) {
         ApiResponse<String> response = editionsService.addEdition(edition);
         if (response.isSuccess()) {

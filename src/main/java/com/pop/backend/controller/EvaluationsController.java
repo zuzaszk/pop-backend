@@ -39,6 +39,7 @@ public class EvaluationsController {
             summary = "List all projects that assigned to supervisor/reviewer to evaluate",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
             @RequestParam("userId") Integer userId,
             @RequestParam(value = "editionId", required = false) Integer editionId) {
@@ -53,6 +54,7 @@ public class EvaluationsController {
             summary = "Supervisor/Reviewer add evaluation for a certain project",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation request: {}", evaluation);
 
@@ -77,6 +79,7 @@ public class EvaluationsController {
             summary = "Update an existing evaluation for a certain project",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> updateEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation update request: {}", evaluation);
 
@@ -101,6 +104,7 @@ public class EvaluationsController {
             summary = "Retrieve evaluation based on projectId, userId, and evaluationRoleId",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(
             @RequestParam("projectId") Integer projectId,
             @RequestParam("userId") Integer userId,
