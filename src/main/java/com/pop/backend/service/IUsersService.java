@@ -4,12 +4,23 @@ import java.util.List;
 import java.util.Optional;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pop.backend.auth.RegistrationRequest;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 
 public interface IUsersService extends IService<Users> {
 
     Optional<Users> findByEmail(String email);
+
+    Users createUserFromRequest(
+        RegistrationRequest request
+        // String usosId,
+        // String email, String password,
+        // String name, String firstName, String lastName,
+        // Timestamp createdAt, Timestamp lastLoginAt
+        );
+
+    UserRole assignRoleToUser(Integer userId, Integer roleId, Integer editionId, Integer projectId);
 
     Optional<Users> findByEmailWithRole(String email);
 

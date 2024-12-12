@@ -1,5 +1,6 @@
 package com.pop.backend.serviceImpl;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.pop.backend.auth.RegistrationRequest;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.mapper.UserRoleMapper;
@@ -113,6 +115,39 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             throw new IllegalArgumentException("No matching user role found for update.");
         }
     }
+
+    public Users createUserFromRequest(RegistrationRequest request) {
+        Users user = new Users();
+        user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
+        user.setName(request.getFirstName() + " " + request.getLastName());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+        return user;
+    }
+
+    @Override
+    public UserRole assignRoleToUser(Integer userId, Integer roleId, Integer editionId, Integer projectId) {
+        UserRole userRole = new UserRole();
+        
+        userRole.setUserId(userId);
+        userRole.setRoleId(roleId);
+        userRole.setEditionId(editionId);
+        userRole.setProjectId(projectId);
+
+        userRoleMapper.insert(userRole);
+        return userRole;
+    }
+
+    // @Override
+    // public Users createNewUser(String usosId, String email, String password, String name, String firstName, String lastName,
+    //         Timestamp createdAt, Timestamp lastLoginAt) {
+    //     Users user = new Users(usosId, email, name, createdAt, lastLoginAt, password, firstName, lastName);
+    //     return user;
+    // }
+
 
     @Override
     public Optional<Users> findByUsosId(String id) {
