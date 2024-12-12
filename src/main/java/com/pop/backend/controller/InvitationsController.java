@@ -40,4 +40,9 @@ public class InvitationsController {
                 ResponseEntity.badRequest().body("Failed to accept invitation.");
     }
 
+    @GetMapping("/id")
+    public ResponseEntity<Integer> getInvitationId(@RequestParam String invitationLink) {
+        return ResponseEntity.ok(invitationsService.findInvitationByInvitationLink(invitationLink).getInvitationId());
+    }
+
 }
