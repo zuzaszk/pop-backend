@@ -147,7 +147,7 @@ public class UsersController {
     @PostMapping("/switchRole")
     @Operation(
             summary = "Switch user role",
-            tags = {"User", "Role"}
+            tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> switchRole(
@@ -176,7 +176,7 @@ public class UsersController {
     @GetMapping("/currentRole")
     @Operation(
             summary = "Get current role for user",
-            tags = {"User", "Role"}
+            tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Integer> getCurrentRole(
@@ -194,15 +194,19 @@ public class UsersController {
     @PostMapping("/addRole")
     @Operation(
             summary = "Add role to user",
-            tags = {"User", "Role"}
+            tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> addRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @RequestParam Integer userId,
+        @RequestParam(required = false) Integer userId,
         @RequestParam Integer roleId,
         @RequestParam(required = false) Integer projectId,
         @RequestParam(required = false) Integer editionId) {
+
+            if (userId == null) {
+                userId = userDetails.getUserId();
+            }
 
             List<UserRole> userRoles = usersService.findUserRoles(userId);
 
@@ -213,12 +217,7 @@ public class UsersController {
                 return ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body("The user already has the specified role.");
             }
 
-            UserRole userRole = new UserRole();
-            userRole.setUserId(userId);
-            userRole.setRoleId(roleId);
-            userRole.setProjectId(projectId);
-            userRole.setEditionId(editionId);
-            usersService.insertUserRole(userRole);
+            usersService.assignRoleToUser(userId, roleId, editionId, projectId);
 
             return ResponseEntity.ok("Role added successfully.");
     }
@@ -226,16 +225,22 @@ public class UsersController {
     @PostMapping("/editRole")
     @Operation(
             summary = "Edit role of user",
-            tags = {"User", "Role"}
+            tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> editRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        @RequestParam Integer userId,
+        @RequestParam(required = false) Integer userId,
         @RequestParam Integer roleId,
         @RequestParam Integer projectId,
         @RequestParam Integer editionId,
-        @RequestParam Integer newRoleId) {
+        @RequestParam Integer newRoleId,
+        @RequestParam(required = false) Integer newProjectId,
+        @RequestParam(required = false) Integer newEditionId) {
+
+            if (userId == null) {
+                userId = userDetails.getUserId();
+            }
 
             List<UserRole> userRoles = usersService.findUserRoles(userId);
 
@@ -253,18 +258,20 @@ public class UsersController {
     @DeleteMapping("/deleteRole")
     @Operation(
             summary = "Delete role from user",
-            tags = {"User", "Role"}
+            tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> deleteRole(
         // @RequestHeader("Authorization") String authorizationHeader,
-        // @RequestParam Integer userId,
         @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam(required = false) Integer userId,
         @RequestParam Integer roleId,
         @RequestParam(required = false) Integer projectId,
         @RequestParam(required = false) Integer editionId) {
 
-            Integer userId = userDetails.getUserId();
+            if (userId == null) {
+                userId = userDetails.getUserId();
+            }
             Integer currentRole = userDetails.getRole();
             // String authorizationHeader = userDetails.getToken();
             // Integer currentRole = tokenService.getRoleFromToken(authorizationHeader.replace("Bearer ", ""));

@@ -1,18 +1,19 @@
 package com.pop.backend.serviceImpl;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pop.backend.auth.RegistrationRequest;
+import com.pop.backend.common.RegistrationRequest;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.mapper.UserRoleMapper;
@@ -27,6 +28,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Autowired
     private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    @Lazy
+    private BCryptPasswordEncoder passwordEncoder;
     
     @Override
     public Optional<Users> findByEmail(String email) {
@@ -108,7 +113,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public Users createUserFromRequest(RegistrationRequest request) {
         Users user = new Users();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getFirstName() + " " + request.getLastName());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -130,6 +135,27 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
         return user;
 
+    }
+
+    @Override
+    public Users createUSOSUser(Map<String, Object> userInfo, String email) {
+
+        String id = (String) userInfo.get("id");
+        String firstName = (String) userInfo.get("firstName");
+        String lastName = (String) userInfo.get("lastName");
+        String name = firstName + " " + lastName;
+
+        Users user = new Users();
+
+        user.setUsosId(id);
+        user.setEmail(email);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setName(name);
+        user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+
+        return user;
     }
 
     @Override

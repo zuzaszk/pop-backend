@@ -1,4 +1,4 @@
-package com.pop.backend.auth;
+package com.pop.backend.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

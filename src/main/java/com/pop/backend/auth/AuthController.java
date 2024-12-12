@@ -11,6 +11,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pop.backend.common.AuthResponse;
+import com.pop.backend.common.ForgotPasswordRequest;
+import com.pop.backend.common.LoginRequest;
+import com.pop.backend.common.RegistrationRequest;
+import com.pop.backend.common.ResetPasswordRequest;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IUsersService;
@@ -44,7 +49,7 @@ public class AuthController {
     @PostMapping("/register")
     @Operation(
             summary = "Register a new user",
-            tags = {"Auth"}
+            tags = {"Authentication"}
     )
     public ResponseEntity<AuthResponse> register(@RequestBody RegistrationRequest request) {
 
@@ -72,7 +77,7 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(
             summary = "Login user",
-            tags = {"Auth"}
+            tags = {"Authentication"}
     )
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         
@@ -104,7 +109,7 @@ public class AuthController {
     @PostMapping("/forgot-password")
     @Operation(
             summary = "Send password reset link to user's email",
-            tags = {"Auth"}
+            tags = {"Authentication"}
     )
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
         try {
@@ -129,7 +134,7 @@ public class AuthController {
     @PostMapping("/reset-password")
     @Operation(
             summary = "Reset user's password",
-            tags = {"Auth"}
+            tags = {"Authentication"}
     )
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         System.out.println("Reset password endpoint hit");

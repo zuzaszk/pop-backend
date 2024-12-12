@@ -20,7 +20,7 @@ import com.github.scribejava.core.model.OAuth1RequestToken;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth10aService;
-import com.pop.backend.entity.UserRole;
+import com.pop.backend.common.AuthResponse;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
 
@@ -46,7 +46,7 @@ public class USOSController {
     @GetMapping("/login")
     @Operation(
             summary = "Login using USOS OAuth 1.0",
-            tags = {"Auth", "USOS"}
+            tags = {"USOS"}
     )
     public ResponseEntity<AuthResponse> usosLogin(HttpSession session) throws Exception {
         OAuth1RequestToken requestToken = oauthService.getRequestToken();
@@ -59,7 +59,7 @@ public class USOSController {
     @GetMapping("/callback")
     @Operation(
         summary = "Callback for USOS OAuth 1.0",
-        tags = {"Auth", "USOS"}
+        tags = {"USOS"}
     )
     public ResponseEntity<Void> usosCallback(
         @RequestParam String oauth_verifier,
@@ -93,7 +93,6 @@ public class USOSController {
             user = userService.findByEmailWithRole(user.getEmail()).get();
             String loginToken = tokenService.generateToken(user, user.getUserRole().get(0).getRoleId());
             String frontendUrl = "http://localhost:5173/#/login-success?token=" + loginToken;
-            // return ResponseEntity.ok().header("Authorization", loginToken).build();
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(frontendUrl)).build();
         }
 
@@ -111,7 +110,7 @@ public class USOSController {
     @PostMapping("/finalize-user")
     @Operation(
         summary = "Finalize user registration or update",
-        tags = {"Auth", "USOS"}
+        tags = {"USOS"}
     )
     public ResponseEntity<AuthResponse> finalizeUser(
         @RequestParam String token, @RequestParam String email) {
@@ -125,42 +124,27 @@ public class USOSController {
         Map<String, Object> userInfo = tokenService.validateToken(token);
 
         String id = (String) userInfo.get("id");
-        String firstName = (String) userInfo.get("firstName");
-        String lastName = (String) userInfo.get("lastName");
-        String name = firstName + " " + lastName;
         Integer studentStatus = (Integer) userInfo.get("studentStatus");
 
         Users user;
         if (userService.findByEmail(email).isPresent()) {
-            user = userService.findByEmail(email).get();
+            user = userService.findByEmailWithRole(email).get();
             user.setUsosId(id);
             user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
             userService.updateUser(user);
+            currentRole = user.getUserRole().get(0).getRoleId();
         } else {
-            user = new Users();
-            user.setUsosId(id);
-            user.setEmail(email);
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setName(name);
-            user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            user.setLastLoginAt(new Timestamp(System.currentTimeMillis()));
+            user = userService.createUSOSUser(userInfo, email);
             userService.registerUser(user);
-        }
 
-        if (studentStatus == 2) {
-            UserRole studentRole = new UserRole();
-            studentRole.setUserId(user.getUserId());
-            studentRole.setRoleId(1);
-            userService.insertUserRole(studentRole);
-            currentRole = 1;
-        } else {
-            currentRole = 5;
+            userService.assignRoleToUser(user.getUserId(), 5, null, null);
+            if (studentStatus == 2) {
+                userService.assignRoleToUser(user.getUserId(), 1, null, null);
+                currentRole = 1;
+            } else {
+                currentRole = 5;
+            }
         }
-        UserRole spectatorRole = new UserRole();
-        spectatorRole.setUserId(user.getUserId());
-        spectatorRole.setRoleId(5);
-        userService.insertUserRole(spectatorRole);
 
         String loginToken = tokenService.generateToken(user, currentRole);
 
