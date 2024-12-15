@@ -1,6 +1,7 @@
 package com.pop.backend.controller;
 import com.pop.backend.common.ApiResponse;
 import com.pop.backend.entity.Projects;
+import com.pop.backend.security.AccessControlService;
 import com.pop.backend.service.IProjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class ProjectsController {
 
     @Autowired
     IProjectsService projectsService;
+
+    @Autowired
+    AccessControlService accessControlService;
 
     @GetMapping("/listAll")
     @Operation(
@@ -85,9 +89,12 @@ public class ProjectsController {
             description = "Author: YL",
             tags = {"Projects"}
     )
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT')")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Integer> saveBasicInfo(@RequestBody Projects projects) {
+        if (!accessControlService.isTeamMember(projects.getProjectId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
         Integer projectId = projectsService.saveBasicInfo(projects);
         return ResponseEntity.ok(projectId);
     }
