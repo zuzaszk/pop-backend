@@ -23,10 +23,8 @@ public class JwtFilter extends OncePerRequestFilter {
     
     private final TokenService tokenService;
     private final IUsersService usersService;
-    // public JwtFilter(TokenService tokenService) {
-    //     this.tokenService = tokenService;
-    // }
-
+    
+    @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -53,7 +51,6 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("OOPPSSSS!!!!");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

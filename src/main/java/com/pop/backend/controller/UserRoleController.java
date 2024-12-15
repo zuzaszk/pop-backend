@@ -39,7 +39,7 @@ public class UserRoleController {
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     public ResponseEntity<ApiResponse<String>> removeTeamMembers(
-            @RequestParam("projectId") Integer projectId,
+            @RequestParam Integer projectId,
             @RequestBody List<Integer> userIds) {
 
         try {
