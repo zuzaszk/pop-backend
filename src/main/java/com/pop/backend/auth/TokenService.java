@@ -1,12 +1,12 @@
 package com.pop.backend.auth;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 
 import io.jsonwebtoken.Claims;
@@ -22,11 +22,11 @@ public class TokenService {
     private String SECRET_KEY;
 
     public String generateToken(Users user, Integer role) {
+        
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("role", role)
                 .claim("id", user.getUserId())
-                // .claim("user_roles", user.getUserRole())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))  // 1 day
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
@@ -41,7 +41,15 @@ public class TokenService {
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
-    
+
+    public String generateTemporaryToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))  // 1 hour
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     public Claims validateToken(String token) {
         return Jwts.parserBuilder()
@@ -62,9 +70,5 @@ public class TokenService {
     public Integer getIdFromToken(String token) {
         return (Integer) validateToken(token).get("id", Integer.class);
     }
-
-    // public List<UserRole> getUserRolesFromToken(String token) {
-    //     return (List<UserRole>) validateToken(token).get("user_roles", List.class);
-    // }
 }
 

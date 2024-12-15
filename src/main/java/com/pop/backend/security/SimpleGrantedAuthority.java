@@ -3,7 +3,7 @@ package com.pop.backend.security;
 import org.springframework.security.core.GrantedAuthority;
 
 public class SimpleGrantedAuthority implements GrantedAuthority {
-    private final String authority;
+    private final String authority; // role
 
     public SimpleGrantedAuthority(String authority) {
         this.authority = authority;

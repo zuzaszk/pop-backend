@@ -42,4 +42,5 @@ public interface UserRoleMapper extends BaseMapper<UserRole> {
     UserRole findRole(Integer userId, Integer roleId, Integer projectId, Integer editionId);
 
 
+    int isUserInProject(Integer userId, Integer projectId);
 }
