@@ -23,7 +23,6 @@ public interface IEvaluationsService extends IService<Evaluations> {
 
     Evaluations getEvaluationByUser(Integer projectId, Integer userId);
 
-
     ApiResponse<String> updateEvaluation(Evaluations evaluation);
 
     int getEvaluatedProjectsCount(int reviewerId);
