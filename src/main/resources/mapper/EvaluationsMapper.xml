@@ -93,6 +93,14 @@
 <!--          AND evaluation_role_id = #{evaluationRoleId}-->
 <!--    </select>-->
 
+    <select id="getEvaluationByUser" resultMap="EvaluationBaseResultMap">
+        SELECT
+            *
+        FROM evaluations
+        WHERE project_id = #{projectId}
+          AND user_id = #{userId}
+    </select>
+
 
     <select id="getEvaluationByUserProjectEvaluationRole" resultMap="EvaluationBaseResultMap">
         SELECT

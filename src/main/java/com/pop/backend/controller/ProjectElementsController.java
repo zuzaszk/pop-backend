@@ -35,6 +35,7 @@ public class ProjectElementsController {
             description = "Author: YL",
             tags = {"Project Elements"}
     )
+
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<String> uploadElement(
@@ -57,7 +58,6 @@ public class ProjectElementsController {
             description = "Author: YL",
             tags = {"Project Elements"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Resource> retrieveFile(
                 @RequestParam Integer projectElementId) {
 

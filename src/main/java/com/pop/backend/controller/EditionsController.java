@@ -38,7 +38,6 @@ public class EditionsController {
             description = "Author: YL",
             tags = {"Editions"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Editions>> getAllEditions() {
         List<Editions> editions = editionsMapper.selectList(null);
         return ResponseEntity.ok(editions);

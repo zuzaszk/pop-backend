@@ -33,7 +33,6 @@ public class DeadlinesController {
             description = "Author: YL",
             tags = {"Deadlines"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Deadlines> getDeadlineByProjectIdAndElementTypeId(
             @RequestParam Integer projectId,
             @RequestParam Integer elementTypeId) {

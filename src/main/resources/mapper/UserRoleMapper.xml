@@ -51,7 +51,6 @@
           AND user_id = #{userId}
     </select>
 
-
     <update id="updateUserRole">
         UPDATE user_role
         SET role_id = #{newRoleId}

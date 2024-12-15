@@ -21,7 +21,7 @@ public interface IEvaluationsService extends IService<Evaluations> {
 
     ApiResponse<String> addEvaluation(Evaluations evaluation);
 
-    Evaluations getEvaluationByUserProjectEvaluationRole(Integer projectId, Integer userId, Integer evaluationRoleId);
+    Evaluations getEvaluationByUser(Integer projectId, Integer userId);
 
 
     ApiResponse<String> updateEvaluation(Evaluations evaluation);

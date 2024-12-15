@@ -37,7 +37,6 @@ public class ProjectsController {
             description = "Author: YL",
             tags = {"Projects"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> listAll(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer year,
@@ -53,7 +52,6 @@ public class ProjectsController {
             description = "Author: YL",
             tags = {"Projects"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Projects> getBasicProjectInfoById(
             @RequestParam Integer projectId) {
         Projects project = projectsService.getBasicProjectInfoById(projectId);
