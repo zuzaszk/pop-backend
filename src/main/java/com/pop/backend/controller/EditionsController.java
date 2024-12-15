@@ -35,7 +35,8 @@ public class EditionsController {
     @GetMapping("/listAll")
     @Operation(
             summary = "List all editions",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Editions"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Editions>> getAllEditions() {
@@ -47,7 +48,8 @@ public class EditionsController {
     @PostMapping("/add")
     @Operation(
             summary = "For Chair adding new edition",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Editions"}
     )
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})

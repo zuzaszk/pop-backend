@@ -71,8 +71,8 @@ public class ProjectsController {
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> createProject(
-                @RequestParam("title") String title,
-            @RequestParam("editionId") Integer editionId) {
+                @RequestParam String title,
+            @RequestParam Integer editionId) {
 
         projectsService.createProject(title, editionId);
         return ResponseEntity.ok("Project created successfully.");
@@ -102,11 +102,11 @@ public class ProjectsController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Projects>>> getProjectsByUserRole(
-            @RequestParam("userId") Integer userId,
-            @RequestParam("roleId") Integer roleId,
-            @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "language", required = false) Integer language) {
+            @RequestParam Integer userId,
+            @RequestParam Integer roleId,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer language) {
         try {
             List<Projects> projects = projectsService.getProjectsByUserRole(userId, roleId, title, year, language);
             return ResponseEntity.ok(new ApiResponse<>(true, "Projects retrieved successfully.", projects));

@@ -38,8 +38,8 @@ public class EvaluationsController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
-            @RequestParam("userId") Integer userId,
-            @RequestParam(value = "editionId", required = false) Integer editionId) {
+            @RequestParam Integer userId,
+            @RequestParam(required = false) Integer editionId) {
 
         List<Projects> projects = evaluationsService.getProjectsAssignedToUser(userId, editionId);
         return ResponseEntity.ok(projects);
@@ -104,9 +104,9 @@ public class EvaluationsController {
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(
-            @RequestParam("projectId") Integer projectId,
-            @RequestParam("userId") Integer userId,
-            @RequestParam("evaluationRoleId") Integer evaluationRoleId) {
+            @RequestParam Integer projectId,
+            @RequestParam Integer userId,
+            @RequestParam Integer evaluationRoleId) {
 
         try {
             Evaluations evaluation = evaluationsService.getEvaluationByUserProjectEvaluationRole(projectId, userId, evaluationRoleId);

@@ -48,12 +48,13 @@ public class StatisticController {
     @GetMapping("/getCounts")
     @Operation(
             summary = "Fetch total number of users(optional filtered by roles), projects and reviews(optional filtered by edition)",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Statistics"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCounts(
-            @RequestParam(value = "roleId", required = false) Integer roleId,
-            @RequestParam(value = "editionId", required = false) Integer editionId) {
+            @RequestParam(required = false) Integer roleId,
+            @RequestParam(required = false) Integer editionId) {
         try {
             Map<String, Object> statistics = statisticService.getCounts(roleId, editionId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Statistics retrieved successfully.", statistics));
@@ -70,11 +71,12 @@ public class StatisticController {
     @GetMapping("/topTechnologies")
     @Operation(
             summary = "Retrieve the most frequently used technologies, optionally filtered by edition.",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Statistics"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getTopTechnologies(
-            @RequestParam(value = "editionId", required = false) Integer editionId) {
+            @RequestParam(required = false) Integer editionId) {
         try {
             List<Map<String, Object>> topTechnologies = projectsService.getTopTechnologies(editionId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Top technologies retrieved successfully.", topTechnologies));
@@ -89,11 +91,12 @@ public class StatisticController {
     @GetMapping("/averageGrades")
     @Operation(
             summary = "Get average grades for the last n editions",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Statistics"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAverageGrades(
-            @RequestParam("n") int n) {
+            @RequestParam int n) {
 
         try {
             List<Map<String, Object>> results = editionsService.getAverageGradesForLastEditions(n);
@@ -108,7 +111,8 @@ public class StatisticController {
     @GetMapping("/evaluationDetails")
     @Operation(
             summary = "List project evaluation details with final weighted scores",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Statistics"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Map<String, Object>>> listProjectEvaluationDetails(
@@ -121,23 +125,15 @@ public class StatisticController {
     @GetMapping("/reviewerStatistics")
     @Operation(
             summary = "Get statistics for a reviewer",
-            tags = {"Reviewer", "Statistics"}
+            tags = {"Statistics"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getReviewerStatistics(
-            @AuthenticationPrincipal CustomUserDetails userDetails//,        
-            // @RequestParam(required = false) Integer reviewerId
-            ) {
-        // if (reviewerId == null) {
-        //     reviewerId = userDetails.getUserId();
-        // }
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getReviewerStatistics(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Integer reviewerId = userDetails.getUserId();
         try {
             Map<String, Object> statistics = statisticService.getReviewersStatistics(reviewerId);
-            System.out.println("Statistics: " + statistics);
             return ResponseEntity.ok(new ApiResponse<>(true, "Reviewer statistics retrieved successfully.", statistics));
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>(false, "Failed to retrieve reviewer statistics.", null));

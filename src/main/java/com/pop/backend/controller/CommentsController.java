@@ -2,7 +2,6 @@ package com.pop.backend.controller;
 
 import com.pop.backend.common.ApiResponse;
 import com.pop.backend.entity.Comments;
-import com.pop.backend.entity.Editions;
 import com.pop.backend.service.ICommentsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
-
 import java.util.List;
 
 /**
@@ -31,7 +28,8 @@ public class CommentsController {
     @PostMapping("/add")
     @Operation(
             summary = "Supervisor and reviewer add comments to element",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Comments"}
     )
     @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
@@ -48,11 +46,12 @@ public class CommentsController {
     @GetMapping("/getByElementId")
     @Operation(
             summary = "Get comments by elementId",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Comments"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Comments>>> getCommentsByElementId(
-            @RequestParam("elementId") Integer elementId) {
+            @RequestParam Integer elementId) {
         try {
             List<Comments> comments = commentsService.getCommentsByElementId(elementId);
             return ResponseEntity.ok(new ApiResponse<>(true, "Comments retrieved successfully.", comments));
@@ -61,7 +60,5 @@ public class CommentsController {
                     .body(new ApiResponse<>(false, "Failed to retrieve comments.", null));
         }
     }
-
-
 
 }

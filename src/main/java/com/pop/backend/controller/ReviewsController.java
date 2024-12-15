@@ -31,7 +31,9 @@ public class ReviewsController {
     @PostMapping("/add")
     @Operation(
             summary = "Add a review",
-            description = "Author: YL")
+            description = "Author: YL",
+            tags = {"Reviews"}
+        )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     public ResponseEntity<ApiResponse<String>> addReview(@RequestBody Reviews review) {
