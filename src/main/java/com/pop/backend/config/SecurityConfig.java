@@ -1,9 +1,14 @@
 package com.pop.backend.config;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,15 +27,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler OAuth2SuccessHandler;
-    private final JwtFilter jwtFilter;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, OAuth2SuccessHandler OAuth2SuccessHandler, JwtFilter jwtFilter) {
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.OAuth2SuccessHandler = OAuth2SuccessHandler;
-        this.jwtFilter = jwtFilter;
-    }
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired
+    private OAuth2SuccessHandler OAuth2SuccessHandler;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Value("${frontend_url}")
     private String frontendUrl;
@@ -68,9 +73,6 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
                 .permitAll())
-            // .csrf(c -> c
-            //     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            // )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             ;
         return http.build();
@@ -79,5 +81,23 @@ public class SecurityConfig {
     @Bean
     BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+            .role("CHAIR").implies("SUPERVISOR")
+            .role("SUPERVISOR").implies("STUDENT")
+            .role("STUDENT").implies("SPECTATOR")
+            .role("CHAIR").implies("REVIEWER")
+            .role("REVIEWER").implies("SPECTATOR")
+            .build();
+    }
+
+    @Bean
+    /*static*/ MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        return expressionHandler;
     }
 }

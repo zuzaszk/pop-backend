@@ -1,13 +1,17 @@
 package com.pop.backend.controller;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,10 +21,10 @@ import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.IUsersService;
+
 import com.pop.backend.auth.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -112,6 +116,7 @@ public class UsersController {
             tags = {"User"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> deleteUser(@RequestParam Integer userId) {
         Users user = usersService.getBasicUserInfoById(userId);
         if (user == null) {
@@ -120,6 +125,20 @@ public class UsersController {
         usersService.removeById(userId);
         return ResponseEntity.ok("User deleted successfully.");
     }
+
+    
+    @DeleteMapping("/deleteYourself")
+    @Operation(
+            summary = "Delete your own account",
+            tags = {"User"}
+    )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    public ResponseEntity<String> KYS(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Integer userId = userDetails.getUserId();
+        usersService.removeById(userId);
+        return ResponseEntity.ok("User deleted successfully.");
+    }
+
 
     @GetMapping("/listAll")
     @Operation(
@@ -152,7 +171,6 @@ public class UsersController {
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<String> switchRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
-        // @RequestParam Integer userId,
         @RequestParam Integer roleId
         ) {
             Integer userId = userDetails.getUserId();
@@ -167,7 +185,6 @@ public class UsersController {
                 return ResponseEntity.status(HttpStatus.SC_FORBIDDEN).body("The user does not have the specified role.");
             }
 
-            // usersService.setCurrentRoleForUser(userId, roleId);
             String newToken = tokenService.generateToken(user, roleId);
             return ResponseEntity.ok("Switched to role: " + roleId + "\nNew token: " + newToken);
     }
@@ -197,6 +214,7 @@ public class UsersController {
             tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> addRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(required = false) Integer userId,
@@ -228,6 +246,7 @@ public class UsersController {
             tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> editRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(required = false) Integer userId,
@@ -261,8 +280,8 @@ public class UsersController {
             tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> deleteRole(
-        // @RequestHeader("Authorization") String authorizationHeader,
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam(required = false) Integer userId,
         @RequestParam Integer roleId,
@@ -273,8 +292,6 @@ public class UsersController {
                 userId = userDetails.getUserId();
             }
             Integer currentRole = userDetails.getRole();
-            // String authorizationHeader = userDetails.getToken();
-            // Integer currentRole = tokenService.getRoleFromToken(authorizationHeader.replace("Bearer ", ""));
             List<UserRole> userRoles = usersService.findUserRoles(userId);
 
             if (userRoles.size() == 1) {
