@@ -28,18 +28,6 @@ public class InvitationsController {
 
 
 
-    @GetMapping("/sendProclamation")
-    @Operation(
-            summary = "A Divine, Spiritual and Exclusive API, dedicate to The One and The Only :)",
-            description = "Author: YL"
-    )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
-    public String sendProclamation() {
-        String toEmail = "bamaliu@protonmail.com";
-        //String toEmail = "269614@student.pwr.edu.pl";
-        emailService.sendProclamationEmail(toEmail);
-        return "Proclamation email sent to " + toEmail;
-    }
 
 
 
