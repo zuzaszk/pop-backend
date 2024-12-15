@@ -41,10 +41,10 @@ public class SecurityConfig {
             .cors(cors -> cors
                 .configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.addAllowedOrigin("http://192.168.0.109:5173"); // Frontend URL
-                    //config.addAllowedOrigin("http://localhost:5173"); // Frontend URL
+                    //config.addAllowedOrigin("http://192.168.0.109:5173"); // Frontend URL
+                    config.addAllowedOrigin("http://localhost:5173"); // Frontend URL
                     //Production Enviorment
-                    //config.addAllowedOrigin("https://269593.kieg.science");
+                    config.addAllowedOrigin("https://269593.kieg.science");
 
                     config.addAllowedMethod("*"); // Allow all HTTP methods
                     config.addAllowedHeader("*"); // Allow all headers
