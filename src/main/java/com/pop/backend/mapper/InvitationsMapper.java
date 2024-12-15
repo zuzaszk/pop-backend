@@ -2,15 +2,14 @@ package com.pop.backend.mapper;
 
 import com.pop.backend.entity.Invitations;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
-/**
- * <p>
- *  Mapper 接口
- * </p>
- *
- * @author yl
- * @since 2024-11-12
- */
+import java.util.List;
+
 public interface InvitationsMapper extends BaseMapper<Invitations> {
+
+    @Select("SELECT * FROM invitations ORDER BY created_at DESC")
+    List<Invitations> getAllInvitations();
 
 }
