@@ -1,8 +1,6 @@
 package com.pop.backend.controller;
 import com.pop.backend.common.ApiResponse;
-import com.pop.backend.entity.ProjectElements;
 import com.pop.backend.entity.Projects;
-import com.pop.backend.entity.Users;
 import com.pop.backend.service.IProjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -34,7 +30,8 @@ public class ProjectsController {
     @GetMapping("/listAll")
     @Operation(
             summary = "List all projects with their title, arc and description",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Projects"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> listAll(
@@ -49,7 +46,8 @@ public class ProjectsController {
     @GetMapping("/basicInfo")
     @Operation(
             summary = "Get project information, and everything related to this project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Projects"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Projects> getBasicProjectInfoById(
@@ -67,9 +65,11 @@ public class ProjectsController {
     @PostMapping("/create")
     @Operation(
             summary = "Chair initially create project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Projects"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> createProject(
                 @RequestParam("title") String title,
             @RequestParam("editionId") Integer editionId) {
@@ -82,8 +82,10 @@ public class ProjectsController {
     @PutMapping ("/saveBasicInfo")
     @Operation(
             summary = "Student fill info about the project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Projects"}
     )
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<Integer> saveBasicInfo(@RequestBody Projects projects) {
         Integer projectId = projectsService.saveBasicInfo(projects);
@@ -95,7 +97,8 @@ public class ProjectsController {
     @GetMapping("/getByUserRole")
     @Operation(
             summary = "Get projects connected to a user in a certain role, optional filtered by edition and language",
-            description = "Fetch projects connected to a specific user and role, with optional filters for edition and language."
+            description = "Fetch projects connected to a specific user and role, with optional filters for edition and language.",
+            tags = {"Projects"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Projects>>> getProjectsByUserRole(

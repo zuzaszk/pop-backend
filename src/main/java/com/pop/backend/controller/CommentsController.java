@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
@@ -32,6 +33,7 @@ public class CommentsController {
             summary = "Supervisor and reviewer add comments to element",
             description = "Author: YL"
     )
+    @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addComment(@RequestBody Comments comments) {
         ApiResponse<String> response = commentsService.addComment(comments);

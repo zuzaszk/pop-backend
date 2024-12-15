@@ -1,9 +1,7 @@
 package com.pop.backend.mapper;
 
-import com.pop.backend.entity.ElementTypes;
 import com.pop.backend.entity.ProjectElements;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.pop.backend.entity.Reviews;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

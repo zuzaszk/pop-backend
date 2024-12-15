@@ -7,6 +7,7 @@ import com.pop.backend.service.IEditionsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +49,7 @@ public class EditionsController {
             summary = "For Chair adding new edition",
             description = "Author: YL"
     )
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addEdition(@RequestBody Editions edition) {
         ApiResponse<String> response = editionsService.addEdition(edition);

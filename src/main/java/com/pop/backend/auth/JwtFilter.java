@@ -8,6 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.pop.backend.entity.UserRole;
+import com.pop.backend.service.IUsersService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtFilter extends OncePerRequestFilter {
     
     private final TokenService tokenService;
-
+    private final IUsersService usersService;
     // public JwtFilter(TokenService tokenService) {
     //     this.tokenService = tokenService;
     // }
@@ -37,16 +40,20 @@ public class JwtFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7); // Remove "Bearer "
         try {
             var claims = tokenService.validateToken(token);
-            String email = claims.getSubject(); // Extract user email or ID
+            String email = claims.getSubject(); // Extract user email
             Integer role = (Integer) claims.get("role", Integer.class);
             Integer id = (Integer) claims.get("id", Integer.class);
-            // Set authentication into SecurityContext
-            // var authentication = new UsernamePasswordAuthenticationToken(email, null, List.of());
+            List<UserRole> userRoles = usersService.findByEmailWithRole(email).get().getUserRole();
+
+            CustomUserDetails userDetails = new CustomUserDetails(id, email, role, userRoles);
+
             var authentication = new UsernamePasswordAuthenticationToken(
-                new CustomUserDetails(id, email, role), null, List.of()
+               userDetails, null, userDetails.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("OOPPSSSS!!!!");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }

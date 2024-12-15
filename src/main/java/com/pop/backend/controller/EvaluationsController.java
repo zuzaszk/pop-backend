@@ -4,17 +4,14 @@ import com.pop.backend.common.ApiResponse;
 import com.pop.backend.entity.Evaluations;
 import com.pop.backend.entity.Projects;
 import com.pop.backend.service.IEvaluationsService;
-import com.pop.backend.service.IProjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -54,6 +51,7 @@ public class EvaluationsController {
             summary = "Supervisor/Reviewer add evaluation for a certain project",
             description = "Author: YL"
     )
+    @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation request: {}", evaluation);
