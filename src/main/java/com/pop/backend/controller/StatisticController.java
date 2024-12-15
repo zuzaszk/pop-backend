@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +50,7 @@ public class StatisticController {
             summary = "Fetch total number of users(optional filtered by roles), projects and reviews(optional filtered by edition)",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCounts(
             @RequestParam(value = "roleId", required = false) Integer roleId,
             @RequestParam(value = "editionId", required = false) Integer editionId) {
@@ -70,6 +72,7 @@ public class StatisticController {
             summary = "Retrieve the most frequently used technologies, optionally filtered by edition.",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getTopTechnologies(
             @RequestParam(value = "editionId", required = false) Integer editionId) {
         try {
@@ -88,6 +91,7 @@ public class StatisticController {
             summary = "Get average grades for the last n editions",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAverageGrades(
             @RequestParam("n") int n) {
 
@@ -106,6 +110,7 @@ public class StatisticController {
             summary = "List project evaluation details with final weighted scores",
             description = "Author: YL"
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Map<String, Object>>> listProjectEvaluationDetails(
             @RequestParam(required = false) Integer editionId) {
         List<Map<String, Object>> projectDetails = projectsService.listProjectEvaluationDetails(editionId);
@@ -118,6 +123,7 @@ public class StatisticController {
             summary = "Get statistics for a reviewer",
             tags = {"Reviewer", "Statistics"}
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Map<String, Object>>> getReviewerStatistics(
             @AuthenticationPrincipal CustomUserDetails userDetails//,        
             // @RequestParam(required = false) Integer reviewerId
