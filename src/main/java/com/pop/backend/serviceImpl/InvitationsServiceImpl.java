@@ -85,6 +85,9 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
 
     @Override
     public boolean acceptInvitation(Integer invitationId) {
+        if (invitationId == null) {
+            return false;
+        }
         Invitations invitation = invitationMapper.selectById(invitationId);
         if (invitation == null || invitation.getIsArchived() || isInvitationExpired(invitationId)) {
             return false;
