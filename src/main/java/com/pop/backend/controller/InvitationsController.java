@@ -33,11 +33,11 @@ public class InvitationsController {
     }
 
 //    After registration
-    @PostMapping("/accept")
-    public ResponseEntity<String> acceptInvitation(@RequestParam Integer invitationId) {
-        return invitationsService.acceptInvitation(invitationId) ?
-                ResponseEntity.ok("Invitation accepted.") :
-                ResponseEntity.badRequest().body("Failed to accept invitation.");
-    }
+//    @PostMapping("/accept")
+//    public ResponseEntity<String> acceptInvitation(@RequestParam Integer invitationId) {
+//        return invitationsService.acceptInvitation(invitationId) ?
+//                ResponseEntity.ok("Invitation accepted.") :
+//                ResponseEntity.badRequest().body("Failed to accept invitation.");
+//    }
 
 }
