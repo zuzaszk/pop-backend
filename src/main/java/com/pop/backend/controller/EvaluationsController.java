@@ -34,7 +34,8 @@ public class EvaluationsController {
     @GetMapping("/assignedEvaluateList")
     @Operation(
             summary = "List all projects that assigned to supervisor/reviewer to evaluate",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
@@ -49,7 +50,8 @@ public class EvaluationsController {
     @PostMapping("/add")
     @Operation(
             summary = "Supervisor/Reviewer add evaluation for a certain project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
     @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
@@ -75,7 +77,8 @@ public class EvaluationsController {
     @PutMapping("/update")
     @Operation(
             summary = "Update an existing evaluation for a certain project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> updateEvaluation(@RequestBody Evaluations evaluation) {
@@ -100,7 +103,8 @@ public class EvaluationsController {
     @GetMapping("/getEvaluation")
     @Operation(
             summary = "Retrieve evaluation based on projectId, userId, and evaluationRoleId",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(

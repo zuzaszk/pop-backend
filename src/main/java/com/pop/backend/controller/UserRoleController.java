@@ -34,7 +34,8 @@ public class UserRoleController {
     @PostMapping("/removeStudentsFromProject")
     @Operation(
             summary = "Allows a supervisor to remove multiple students from their project team. The students will become spectators.",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"User role"}
     )
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
