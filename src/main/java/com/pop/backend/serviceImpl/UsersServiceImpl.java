@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pop.backend.common.RegistrationRequest;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
+import com.pop.backend.mapper.RolesMapper;
 import com.pop.backend.mapper.UserRoleMapper;
 import com.pop.backend.mapper.UsersMapper;
 import com.pop.backend.service.IUsersService;
@@ -28,6 +29,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Autowired
     private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private RolesMapper rolesMapper;
 
     @Autowired
     @Lazy
@@ -166,6 +170,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         userRole.setRoleId(roleId);
         userRole.setEditionId(editionId);
         userRole.setProjectId(projectId);
+        userRole.setRoles(rolesMapper.selectById(roleId));
 
         userRoleMapper.insert(userRole);
         return userRole;
