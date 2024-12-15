@@ -1,9 +1,14 @@
 package com.pop.backend.config;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,15 +27,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler OAuth2SuccessHandler;
-    private final JwtFilter jwtFilter;
 
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, OAuth2SuccessHandler OAuth2SuccessHandler, JwtFilter jwtFilter) {
-        this.customOAuth2UserService = customOAuth2UserService;
-        this.OAuth2SuccessHandler = OAuth2SuccessHandler;
-        this.jwtFilter = jwtFilter;
-    }
+    @Autowired
+    private CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired
+    private OAuth2SuccessHandler OAuth2SuccessHandler;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Value("${frontend_url}")
     private String frontendUrl;
@@ -41,11 +46,7 @@ public class SecurityConfig {
             .cors(cors -> cors
                 .configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    //config.addAllowedOrigin("http://192.168.0.109:5173"); // Frontend URL
                     config.addAllowedOrigin("http://localhost:5173"); // Frontend URL
-                    //Production Enviorment
-                    config.addAllowedOrigin("https://269593.kieg.science");
-
                     config.addAllowedMethod("*"); // Allow all HTTP methods
                     config.addAllowedHeader("*"); // Allow all headers
                     config.setAllowCredentials(true); // Allow cookies/auth tokens
@@ -57,7 +58,9 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                    "/", "/swagger-ui/**", "/v3/api-docs/**", "/auth/**", "/login"
+                    "/",
+                    "/swagger-ui/**", "/v3/api-docs/**",
+                    "/auth/**", "/login", "/usos/**"
                     ).permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
@@ -66,15 +69,10 @@ public class SecurityConfig {
                     .baseUri("/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfo -> userInfo
                     .userService(customOAuth2UserService))
-                .successHandler(OAuth2SuccessHandler)
-                // .defaultSuccessUrl(frontendUrl + "/#/dashboard", true)
-                )
+                .successHandler(OAuth2SuccessHandler))
             .logout(logout -> logout
                 .logoutSuccessUrl(frontendUrl + "/login")
                 .permitAll())
-            // .csrf(c -> c
-            //     .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            // )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
             ;
         return http.build();
@@ -85,5 +83,21 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-}
+    @Bean
+    RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+            .role("CHAIR").implies("SUPERVISOR")
+            .role("SUPERVISOR").implies("STUDENT")
+            .role("STUDENT").implies("SPECTATOR")
+            .role("CHAIR").implies("REVIEWER")
+            .role("REVIEWER").implies("SPECTATOR")
+            .build();
+    }
 
+    @Bean
+    MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        return expressionHandler;
+    }
+}
