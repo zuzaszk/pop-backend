@@ -20,7 +20,7 @@ public class Invitations implements Serializable {
     @TableId(value = "invitation_id", type = IdType.AUTO)
     private Integer invitationId;
 
-    private Integer userId; // TODO
+    private Integer userId;
 
     private String invitationLink;
 
@@ -34,10 +34,8 @@ public class Invitations implements Serializable {
 
     private Boolean isArchived;
 
-    private Integer userRoleId; // TODO
+    private Integer userRoleId;
 
     private String emailAddress;
-
-    private String roleName; // TODO
 
 }

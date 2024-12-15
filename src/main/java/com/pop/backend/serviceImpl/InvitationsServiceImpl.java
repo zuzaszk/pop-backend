@@ -2,9 +2,11 @@ package com.pop.backend.serviceImpl;
 
 import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.Invitations;
+import com.pop.backend.entity.Projects;
 import com.pop.backend.entity.UserRole;
 import com.pop.backend.entity.Users;
 import com.pop.backend.mapper.InvitationsMapper;
+import com.pop.backend.mapper.ProjectsMapper;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IInvitationsService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,6 +36,9 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
 
     @Autowired
     private IUsersService userService;
+
+    @Autowired
+    private ProjectsMapper projectsMapper;
 
     private static final Map<Integer, String> roleMap = new HashMap<>();
     static {
@@ -55,18 +61,16 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     @Value("${frontend_url}")
     private String frontendUrl;
 
-//    TODO: clean - move some logic to outside functions
     @Override
-    public Invitations sendInvitation(String emailAddress, String roleName, Integer projectId, Integer editionId) {
+    public Invitations sendInvitation(String emailAddress, String roleName, Integer projectId) {
         Invitations invitation = new Invitations();
         invitation.setEmailAddress(emailAddress);
-        invitation.setRoleName(roleName);
         invitation.setState(0); // Initial state: 0 = Pending
         invitation.setCreatedAt(LocalDateTime.now());
         // TODO: Logic for when the invitation expires: move to archived && change state to expired
         invitation.setExpirationDate(LocalDateTime.now().plusDays(14)); // 14 days validity by default
         invitation.setIsArchived(false);
-        String token = tokenService.generateInvitationToken(emailAddress, roleName, projectId, editionId);
+        String token = tokenService.generateInvitationToken(emailAddress, roleName, projectId);
         String invitationLink = frontendUrl + "/#/register?token=" + token;
         System.out.println("Invitation link: " + invitationLink);
         invitation.setInvitationLink(invitationLink);
@@ -92,11 +96,12 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         String email = claims.getSubject();
         String roleName = claims.get("role_name", String.class);
         Integer projectId = claims.get("project_id", Integer.class);
-        Integer editionId = claims.get("edition_id", Integer.class);
         Optional<Users> user = userService.findByEmailWithRole(email);
         Integer userId = user.map(u -> u.getUserId()).orElse(null);
         invitation.setUserId(userId);
         Integer roleId = getRoleIdByName(roleName);
+        Projects project = projectsMapper.getProjectWithUsersAndEditionById(projectId);
+        Integer editionId = project.getEditionId();
         
         UserRole userRole = new UserRole();
 
@@ -108,7 +113,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         userService.insertUserRole(userRole);
 
         Integer userRoleId = userRole.getUserRoleId();
-        // Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
+//         Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
         invitation.setUserRoleId(userRoleId);
         return invitationMapper.updateById(invitation) > 0;
     }
@@ -139,6 +144,11 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     @Override
     public Invitations findInvitationByInvitationLink(String invitationLink) {
         return invitationMapper.selectOne(new QueryWrapper<Invitations>().eq("invitation_link", invitationLink));
+    }
+
+    @Override
+    public List<Invitations> listAll() {
+        return invitationMapper.getAllInvitations();
     }
 
 }

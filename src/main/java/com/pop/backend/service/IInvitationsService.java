@@ -3,6 +3,8 @@ package com.pop.backend.service;
 import com.pop.backend.entity.Invitations;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 public interface IInvitationsService extends IService<Invitations> {
 
     /**
@@ -11,10 +13,9 @@ public interface IInvitationsService extends IService<Invitations> {
      * @param emailAddress The email address of the recipient who is being invited.
      * @param roleName The name of the role to assign to the recipient (e.g., "student", "supervisor").
      * @param projectId The ID of the project associated with the invitation (can be null if not applicable).
-     * @param editionId The ID of the edition associated with the invitation (can be null if not applicable).
      * @return The created invitation.
      */
-    Invitations sendInvitation(String emailAddress, String roleName, Integer projectId, Integer editionId);
+    Invitations sendInvitation(String emailAddress, String roleName, Integer projectId);
 
     /**
      * Marks an invitation as accepted.
@@ -55,4 +56,6 @@ public interface IInvitationsService extends IService<Invitations> {
      * @return The invitation with the specified invitation link, or null if not found.
      */
     Invitations findInvitationByInvitationLink(String invitationLink);
+
+    List<Invitations> listAll();
 }
