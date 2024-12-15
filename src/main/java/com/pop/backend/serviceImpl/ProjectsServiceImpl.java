@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.pop.backend.entity.Evaluations;
 import com.pop.backend.entity.Projects;
-import com.pop.backend.mapper.EvaluationsMapper;
 import com.pop.backend.mapper.ProjectsMapper;
 import com.pop.backend.service.IProjectsService;
 

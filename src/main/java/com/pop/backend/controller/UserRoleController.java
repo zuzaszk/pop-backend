@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,10 +34,13 @@ public class UserRoleController {
     @PostMapping("/removeStudentsFromProject")
     @Operation(
             summary = "Allows a supervisor to remove multiple students from their project team. The students will become spectators.",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"User role"}
     )
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     public ResponseEntity<ApiResponse<String>> removeTeamMembers(
-            @RequestParam("projectId") Integer projectId,
+            @RequestParam Integer projectId,
             @RequestBody List<Integer> userIds) {
 
         try {

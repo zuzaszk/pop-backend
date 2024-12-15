@@ -35,6 +35,21 @@
     </select>
 
 
+    <select id="isTeachingMember" resultType="int">
+        UPDATE
+            user_role
+        SET
+            role_id = #{newRoleId}
+        WHERE project_id = #{projectId}
+          AND user_id = #{userId}
+    </select>
+
+    <select id="isUserInProject" resultType="int">
+        SELECT COUNT(*)
+        FROM user_role
+        WHERE project_id = #{projectId}
+          AND user_id = #{userId}
+    </select>
 
     <update id="updateUserRole">
         UPDATE user_role

@@ -36,10 +36,6 @@
         FROM evaluations
         WHERE user_id = #{userId}
         AND score IS NULL
-        <!-- SELECT COUNT(*)
-        FROM projects p
-        LEFT JOIN evaluations e ON p.project_id = e.project_id AND e.user_id = #{userId}
-        WHERE e.evaluation_id IS NOT NULL AND e.score IS NULL -->
     </select>
 
     <select id="averageScoreByUser" resultType="double">

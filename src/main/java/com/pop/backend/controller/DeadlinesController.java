@@ -30,11 +30,12 @@ public class DeadlinesController {
     @GetMapping("/getDeadlineByProjectIdAndElementTypeId")
     @Operation(
             summary = "Get hard/soft deadline by projectId and elementId",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Deadlines"}
     )
     public ResponseEntity<Deadlines> getDeadlineByProjectIdAndElementTypeId(
-            @RequestParam("projectId") Integer projectId,
-            @RequestParam("elementTypeId") Integer elementTypeId) {
+            @RequestParam Integer projectId,
+            @RequestParam Integer elementTypeId) {
 
         Deadlines deadline = deadlinesService.getDeadlineByProjectIdAndElementTypeId(projectId, elementTypeId);
         if (deadline == null) {

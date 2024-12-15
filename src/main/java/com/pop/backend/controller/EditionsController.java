@@ -7,6 +7,7 @@ import com.pop.backend.service.IEditionsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,8 @@ public class EditionsController {
     @GetMapping("/listAll")
     @Operation(
             summary = "List all editions",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Editions"}
     )
     public ResponseEntity<List<Editions>> getAllEditions() {
         List<Editions> editions = editionsMapper.selectList(null);
@@ -45,8 +47,11 @@ public class EditionsController {
     @PostMapping("/add")
     @Operation(
             summary = "For Chair adding new edition",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Editions"}
     )
+    @PreAuthorize("hasRole('ROLE_CHAIR')")
+    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<String>> addEdition(@RequestBody Editions edition) {
         ApiResponse<String> response = editionsService.addEdition(edition);
         if (response.isSuccess()) {
