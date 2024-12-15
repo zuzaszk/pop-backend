@@ -109,19 +109,19 @@ public class EvaluationsController {
     @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(
             @RequestParam Integer projectId,
-            @RequestParam Integer userId,
-            @RequestParam Integer evaluationRoleId) {
+            @RequestParam Integer userId) {
 
-        try {
-            Evaluations evaluation = evaluationsService.getEvaluationByUserProjectEvaluationRole(projectId, userId, evaluationRoleId);
-            if (evaluation != null) {
-                return ResponseEntity.ok(new ApiResponse<>(true, "Evaluation retrieved successfully.", evaluation));
-            } else {
-                return ResponseEntity.ok(new ApiResponse<>(false, "No score found for the given parameters.", null));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, "An error occurred while retrieving the score.", null));
-        }
+                try {
+                    Evaluations evaluation = evaluationsService.getEvaluationByUser(projectId, userId);
+                    if (evaluation != null) {
+                        return ResponseEntity.ok(new ApiResponse<>(true, "Evaluation retrieved successfully.", evaluation));
+                    } else {
+                        return ResponseEntity.ok(new ApiResponse<>(false, "No score found for the given parameters.", null));
+                    }
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new ApiResponse<>(false, "An error occurred while retrieving the score.", null));
+                }
     }
+
 }
