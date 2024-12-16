@@ -15,7 +15,11 @@ import com.pop.backend.service.IUsersService;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -58,44 +62,61 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         return -1;
     }
 
+    @Value("${backend_url}")
+    private String backendUrl;
+
     @Value("${frontend_url}")
     private String frontendUrl;
 
+    // TODO: Logic for when the invitation expires: move to archived && change state to expired
     @Override
     public Invitations sendInvitation(String emailAddress, String roleName, Integer projectId) {
         Invitations invitation = new Invitations();
         invitation.setEmailAddress(emailAddress);
         invitation.setState(0); // Initial state: 0 = Pending
         invitation.setCreatedAt(LocalDateTime.now());
-        // TODO: Logic for when the invitation expires: move to archived && change state to expired
         invitation.setExpirationDate(LocalDateTime.now().plusDays(14)); // 14 days validity by default
         invitation.setIsArchived(false);
         String token = tokenService.generateInvitationToken(emailAddress, roleName, projectId);
-        String invitationLink = frontendUrl + "/#/register?token=" + token;
-        System.out.println("Invitation link: " + invitationLink);
-        invitation.setInvitationLink(invitationLink);
+        String invitationAcceptanceLink = backendUrl + "/invitation/accept?token=" + token; // TODO: add /api
+        System.out.println("Invitation link: " + invitationAcceptanceLink);
+        invitation.setInvitationLink(invitationAcceptanceLink);
         invitationMapper.insert(invitation);
-        emailService.sendEmail(emailAddress, "Registration link",
-                "Welcome to PoP! You’ve been invited to join. Please register using this link:\n" + invitationLink);
+        sendMail(emailAddress, invitationAcceptanceLink);
         return invitation;
     }
 
+    public void sendMail(String emailAddress, String link) {
+        String subject = "Invitation to Join a Project";
+        String htmlMessage = "<p>Welcome to PoP!</p>" +
+                "<p>You’ve been invited to join a project group in PoP! Please click the button below to accept the invitation:</p>" +
+                "<a href=\"" + link + "\" style=\"display: inline-block; " +
+                "padding: 10px 20px; background-color: #4CAF50; color: white; " +
+                "text-decoration: none; border-radius: 5px;\">Accept Invitation</a>" +
+                "<p>If the button doesn't work, copy and paste this link into your browser:</p>" +
+                "<p><a href=\"" + link + "\">" + link + "</a></p>";
+
+        emailService.sendEmail(emailAddress, subject, htmlMessage);
+    }
+
     @Override
-    public boolean acceptInvitation(Integer invitationId) {
-        if (invitationId == null) {
-            return false;
-        }
-        Invitations invitation = invitationMapper.selectById(invitationId);
-        if (invitation == null || invitation.getIsArchived() || isInvitationExpired(invitationId)) {
-            return false;
-        }
-        invitation.setState(1); // State: 1 = Accepted
-        archiveInvitation(invitation);
-        String token = extractToken(invitation.getInvitationLink());
+    public String acceptInvitation(String token) {
+        System.out.println("Accept Invitation Service");
+
         Claims claims = tokenService.validateToken(token);
         String email = claims.getSubject();
         String roleName = claims.get("role_name", String.class);
         Integer projectId = claims.get("project_id", Integer.class);
+
+        Invitations invitation = findInvitationByInvitationLink(backendUrl + "/invitation/accept?token=" + token);
+        Integer invitationId = invitation.getInvitationId();
+
+        if (invitation == null || invitation.getIsArchived() || isInvitationExpired(invitationId)) {
+            return null;
+        }
+
+        invitation.setState(1); // State: 1 = Accepted
+        archiveInvitation(invitation);
         Optional<Users> user = userService.findByEmailWithRole(email);
         Integer userId = user.map(u -> u.getUserId()).orElse(null);
         invitation.setUserId(userId);
@@ -115,7 +136,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         Integer userRoleId = userRole.getUserRoleId();
 //         Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
         invitation.setUserRoleId(userRoleId);
-        return invitationMapper.updateById(invitation) > 0;
+        return frontendUrl + "/#/register?token=" + token;
     }
 
     @Override
@@ -131,14 +152,6 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     public boolean isInvitationExpired(Integer invitationId) {
         Invitations invitation = invitationMapper.selectById(invitationId);
         return invitation != null && invitation.getExpirationDate().isBefore(LocalDateTime.now());
-    }
-
-    public String extractToken(String url) {
-        String tokenPrefix = "http://localhost:5173/#/register?token=";
-        if (url.startsWith(tokenPrefix)) {
-            return url.substring(tokenPrefix.length());
-        }
-        return null;
     }
 
     @Override

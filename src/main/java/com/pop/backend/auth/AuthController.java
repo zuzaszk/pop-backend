@@ -71,8 +71,6 @@ public class AuthController {
 
             String token = tokenService.generateToken(newUser, 5); // 5 (spectator) is the default role for new users
 
-            invitationsService.acceptInvitation(request.getInvitationId());
-
             return ResponseEntity.ok(new AuthResponse("User registered successfully!", token));
         } catch (Exception e) {
             e.printStackTrace();
