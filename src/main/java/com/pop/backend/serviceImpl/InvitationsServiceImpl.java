@@ -96,12 +96,11 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
                 "<p>If the button doesn't work, copy and paste this link into your browser:</p>" +
                 "<p><a href=\"" + link + "\">" + link + "</a></p>";
 
-        emailService.sendEmail(emailAddress, subject, htmlMessage);
+        emailService.sendEmailHTML(emailAddress, subject, htmlMessage);
     }
 
     @Override
     public String acceptInvitation(String token) {
-        System.out.println("Accept Invitation Service");
 
         Claims claims = tokenService.validateToken(token);
         String email = claims.getSubject();
@@ -117,7 +116,21 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
 
         invitation.setState(1); // State: 1 = Accepted
         archiveInvitation(invitation);
+
         Optional<Users> user = userService.findByEmailWithRole(email);
+        String redirectionLink;
+        if (user.isPresent()) {
+            redirectionLink = frontendUrl + "/#/invites?token=" + token; // TODO: correct url
+        } else {
+            redirectionLink = frontendUrl + "/#/register?token=" + token; // TODO: correct url
+//            Users newUser = userService.
+//            TODO: Create new user with email, roleId role, ... (whatever already known)
+//            TODO: User role row ? is inserting automatically or has to be inserted ?
+//            TODO: later remember to fill in missing user info during registration
+//            TODO: Endpoint for registering with token or service function ?
+
+        }
+
         Integer userId = user.map(u -> u.getUserId()).orElse(null);
         invitation.setUserId(userId);
         Integer roleId = getRoleIdByName(roleName);
@@ -134,9 +147,10 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         userService.insertUserRole(userRole);
 
         Integer userRoleId = userRole.getUserRoleId();
-//         Integer userRoleId = userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
         invitation.setUserRoleId(userRoleId);
-        return frontendUrl + "/#/register?token=" + token;
+//        TODO !!! Update user_id and user_role_id columns in invitations table but correctly
+//        userService.updateUserRoleFull(userId, 5, roleId, projectId, editionId);
+        return redirectionLink;
     }
 
     @Override

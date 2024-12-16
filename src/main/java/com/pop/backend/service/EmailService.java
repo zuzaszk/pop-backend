@@ -1,5 +1,6 @@
 package com.pop.backend.service;
 
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,6 +29,21 @@ public class EmailService {
             mailSender.send(mailMessage);
 
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendEmailHTML(String toEmail, String subject, String message) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);  // true for multipart (HTML support)
+
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(message, true);  // Set the message as HTML
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
             e.printStackTrace();
         }
     }

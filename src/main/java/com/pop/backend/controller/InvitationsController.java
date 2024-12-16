@@ -42,11 +42,9 @@ public class InvitationsController {
     }
 
     @GetMapping("/accept")
-    public ResponseEntity<String> acceptInvitation(@RequestParam String token) {
-        System.out.println("Accept Invitation endpoint hit");
+    public ResponseEntity<Void> acceptInvitation(@RequestParam String token) {
         String redirectLink = invitationsService.acceptInvitation(token);
-//        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectLink)).build();
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectLink)).build();
     }
 
     @GetMapping("/listAll")
