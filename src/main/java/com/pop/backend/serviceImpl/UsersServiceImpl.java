@@ -176,7 +176,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         return Optional.ofNullable(usersMapper.findByUsosId(id).orElse(null));
     }
 
-
+//  TODO -> updateUserRole(UserRoleId)
     @Override
     public Integer updateUserRoleFull(Integer userId, Integer roleId, Integer newRoleId, Integer newProjectId,
                                    Integer newEditionId) {
