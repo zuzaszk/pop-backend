@@ -37,7 +37,7 @@ public class EvaluationsController {
             description = "Author: YL",
             tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
             @RequestParam Integer userId,
             @RequestParam(required = false) Integer editionId) {
@@ -54,7 +54,7 @@ public class EvaluationsController {
             tags = {"Evaluations"}
     )
     @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<String>> addEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation request: {}", evaluation);
 
@@ -80,7 +80,7 @@ public class EvaluationsController {
             description = "Author: YL",
             tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<String>> updateEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation update request: {}", evaluation);
 
@@ -106,7 +106,7 @@ public class EvaluationsController {
             description = "Author: YL",
             tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(
             @RequestParam Integer projectId,
             @RequestParam Integer userId) {

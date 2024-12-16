@@ -36,7 +36,7 @@ public class ProjectElementsController {
             tags = {"Project Elements"}
     )
 
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ResponseEntity<String> uploadElement(
             @RequestParam Integer projectId,

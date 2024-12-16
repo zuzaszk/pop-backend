@@ -51,7 +51,7 @@ public class StatisticController {
             description = "Author: YL",
             tags = {"Statistics"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<Map<String, Object>>> getCounts(
             @RequestParam(required = false) Integer roleId,
             @RequestParam(required = false) Integer editionId) {
@@ -74,7 +74,7 @@ public class StatisticController {
             description = "Author: YL",
             tags = {"Statistics"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getTopTechnologies(
             @RequestParam(required = false) Integer editionId) {
         try {
@@ -94,7 +94,7 @@ public class StatisticController {
             description = "Author: YL",
             tags = {"Statistics"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAverageGrades(
             @RequestParam int n) {
 
@@ -114,7 +114,7 @@ public class StatisticController {
             description = "Author: YL",
             tags = {"Statistics"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<List<Map<String, Object>>> listProjectEvaluationDetails(
             @RequestParam(required = false) Integer editionId) {
         List<Map<String, Object>> projectDetails = projectsService.listProjectEvaluationDetails(editionId);
@@ -127,7 +127,7 @@ public class StatisticController {
             summary = "Get statistics for a reviewer",
             tags = {"Statistics"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<Map<String, Object>>> getReviewerStatistics(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Integer reviewerId = userDetails.getUserId();
         try {

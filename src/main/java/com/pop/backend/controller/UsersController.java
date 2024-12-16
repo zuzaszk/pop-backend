@@ -46,7 +46,7 @@ public class UsersController {
             summary = "Get current user",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<?> getCurrentUser(
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -68,7 +68,7 @@ public class UsersController {
             summary = "Find user by email",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<?> findUser(@RequestParam String email) {
         Users user = usersService.findByEmail(email).orElse(null);
         return ResponseEntity.ok(user);
@@ -81,7 +81,7 @@ public class UsersController {
             summary = "Update user information",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<String> updateUser(@AuthenticationPrincipal CustomUserDetails userDetails, /*@RequestParam Integer userId,*/ @RequestBody Users updatedUser) {
         Integer userId = userDetails.getUserId();
         Users existingUser = usersService.getBasicUserInfoById(userId);
@@ -111,7 +111,7 @@ public class UsersController {
             summary = "Delete user",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> deleteUser(@RequestParam Integer userId) {
         Users user = usersService.getBasicUserInfoById(userId);
@@ -128,7 +128,7 @@ public class UsersController {
             summary = "Delete your own account",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<String> KYS(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Integer userId = userDetails.getUserId();
         usersService.removeById(userId);
@@ -141,7 +141,7 @@ public class UsersController {
             summary = "List all users",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<List<Users>> listAll() {
         List<Users> users = usersService.listAll();
@@ -153,7 +153,7 @@ public class UsersController {
             summary = "Get basic user information",
             tags = {"User"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<Users> getBasicUserInfoById(@RequestParam Integer userId) {
         Users user = usersService.getBasicUserInfoById(userId);
         return ResponseEntity.ok(user);
@@ -164,7 +164,7 @@ public class UsersController {
             summary = "Switch user role",
             tags = {"User role"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<String> switchRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @RequestParam Integer roleId
@@ -191,7 +191,7 @@ public class UsersController {
             summary = "Get current role for user",
             tags = {"User role"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<Integer> getCurrentRole(
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
@@ -209,7 +209,7 @@ public class UsersController {
             summary = "Add role to user",
             tags = {"User role"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> addRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -241,7 +241,7 @@ public class UsersController {
             summary = "Edit role of user",
             tags = {"User role"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> editRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -275,7 +275,7 @@ public class UsersController {
             summary = "Delete role from user",
             tags = {"User role"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> deleteRole(
         @AuthenticationPrincipal CustomUserDetails userDetails,
