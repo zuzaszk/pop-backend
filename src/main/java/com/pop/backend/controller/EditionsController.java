@@ -51,7 +51,7 @@ public class EditionsController {
             tags = {"Editions"}
     )
     @PreAuthorize("hasRole('ROLE_CHAIR')")
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<String>> addEdition(@RequestBody Editions edition) {
         ApiResponse<String> response = editionsService.addEdition(edition);
         if (response.isSuccess()) {

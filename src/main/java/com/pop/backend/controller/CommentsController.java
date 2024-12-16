@@ -32,7 +32,7 @@ public class CommentsController {
             tags = {"Comments"}
     )
     @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<String>> addComment(@RequestBody Comments comments) {
         ApiResponse<String> response = commentsService.addComment(comments);
         if (response.isSuccess()) {
@@ -49,7 +49,7 @@ public class CommentsController {
             description = "Author: YL",
             tags = {"Comments"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<List<Comments>>> getCommentsByElementId(
             @RequestParam Integer elementId) {
         try {

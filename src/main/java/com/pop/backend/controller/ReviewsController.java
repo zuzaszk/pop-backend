@@ -33,7 +33,7 @@ public class ReviewsController {
             description = "Author: YL",
             tags = {"Reviews"}
         )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     public ResponseEntity<ApiResponse<String>> addReview(@RequestBody Reviews review) {
         ApiResponse<String> response = reviewsService.addReview(review);

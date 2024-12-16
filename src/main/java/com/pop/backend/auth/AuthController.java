@@ -45,7 +45,7 @@ public class AuthController {
     @Value("${frontend_url}")
     private String frontendUrl;
 
-    // @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
+    // @CrossOrigin(origins = {"https://269593.kieg.science", "https://269593.kieg.science/api"})
     @PostMapping("/register")
     @Operation(
             summary = "Register a new user",

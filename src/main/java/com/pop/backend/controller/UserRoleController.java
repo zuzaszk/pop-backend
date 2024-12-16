@@ -37,7 +37,7 @@ public class UserRoleController {
             description = "Author: YL",
             tags = {"User role"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     public ResponseEntity<ApiResponse<String>> removeTeamMembers(
             @RequestParam Integer projectId,

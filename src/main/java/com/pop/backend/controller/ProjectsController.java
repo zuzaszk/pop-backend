@@ -70,7 +70,7 @@ public class ProjectsController {
             description = "Author: YL",
             tags = {"Projects"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     @PreAuthorize("hasRole('ROLE_CHAIR')")
     public ResponseEntity<String> createProject(
                 @RequestParam String title,
@@ -88,7 +88,7 @@ public class ProjectsController {
             tags = {"Projects"}
     )
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<Integer> saveBasicInfo(@RequestBody Projects projects) {
         if (!accessControlService.isTeamMember(projects.getProjectId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
@@ -105,7 +105,7 @@ public class ProjectsController {
             description = "Fetch projects connected to a specific user and role, with optional filters for edition and language.",
             tags = {"Projects"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<List<Projects>>> getProjectsByUserRole(
             @RequestParam Integer userId,
             @RequestParam Integer roleId,
