@@ -1,15 +1,19 @@
 package com.pop.backend.controller;
 
+import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.Invitations;
 import com.pop.backend.entity.Users;
 import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IInvitationsService;
+import io.jsonwebtoken.Claims;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,6 +22,9 @@ public class InvitationsController {
 
     @Autowired
     private final IInvitationsService invitationsService;
+
+    @Autowired
+    private TokenService tokenService;
 
     public InvitationsController(IInvitationsService invitationsService) {
         this.invitationsService = invitationsService;
@@ -32,6 +39,14 @@ public class InvitationsController {
             ) {
         Invitations invitation = invitationsService.sendInvitation(email, roleName, projectId);
         return ResponseEntity.ok(invitation);
+    }
+
+    @GetMapping("/accept")
+    public ResponseEntity<String> acceptInvitation(@RequestParam String token) {
+        System.out.println("Accept Invitation endpoint hit");
+        String redirectLink = invitationsService.acceptInvitation(token);
+//        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectLink)).build();
+        return ResponseEntity.ok("ok");
     }
 
     @GetMapping("/listAll")

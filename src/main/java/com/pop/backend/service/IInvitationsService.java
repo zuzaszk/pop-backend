@@ -17,13 +17,7 @@ public interface IInvitationsService extends IService<Invitations> {
      */
     Invitations sendInvitation(String emailAddress, String roleName, Integer projectId);
 
-    /**
-     * Marks an invitation as accepted.
-     *
-     * @param invitationId The ID of the invitation to accept.
-     * @return True if the invitation was successfully updated, false otherwise.
-     */
-    boolean acceptInvitation(Integer invitationId);
+    String acceptInvitation(String token);
 
     /**
      * Marks an invitation as declined.
