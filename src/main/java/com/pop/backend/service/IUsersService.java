@@ -44,6 +44,4 @@ public interface IUsersService extends IService<Users> {
     void updateUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId, Integer newRoleId);
 
     Optional<Users> findByUsosId(String id);
-
-    Integer updateUserRoleFull(Integer userId, Integer roleId, Integer newRoleId, Integer newProjectId, Integer newEditionId);
 }
