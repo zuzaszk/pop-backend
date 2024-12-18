@@ -19,11 +19,14 @@ public class USOSConfig {
     @Value("${usos.api.base.url}")
     private String baseUrl;
 
+    @Value("$backend_url")
+    private String backendUrl;
+
     @Bean
     OAuth10aService oauthService() {
         return new ServiceBuilder(apiKey)
                 .apiSecret(apiSecret)
-                .callback("http://localhost:8080/usos/callback")
+                .callback(backendUrl + "/usos/callback")
                 .build(new DefaultApi10a() {
                     @Override
                     public String getAccessTokenEndpoint() {

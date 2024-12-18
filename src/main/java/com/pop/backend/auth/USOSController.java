@@ -92,7 +92,7 @@ public class USOSController {
             Users user = userService.findByUsosId(id).get();
             user = userService.findByEmailWithRole(user.getEmail()).get();
             String loginToken = tokenService.generateToken(user, user.getUserRole().get(0).getRoleId());
-            String frontendUrl = "http://localhost:5173/#/login-success?token=" + loginToken;
+            String frontendUrl = "https://269593.kieg.science/#/login-success?token=" + loginToken;
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(frontendUrl)).build();
         }
 
@@ -103,7 +103,7 @@ public class USOSController {
             "studentStatus", studentStatus
         ));
 
-        String frontendUrl = "http://localhost:5173/#/finalize-user?token=" + token;
+        String frontendUrl = "https://269593.kieg.science/#/finalize-user?token=" + token;
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(frontendUrl)).build();
     }
 

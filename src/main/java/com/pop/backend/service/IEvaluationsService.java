@@ -5,7 +5,6 @@ import com.pop.backend.entity.Evaluations;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pop.backend.entity.Projects;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +21,7 @@ public interface IEvaluationsService extends IService<Evaluations> {
 
     ApiResponse<String> addEvaluation(Evaluations evaluation);
 
-    Evaluations getEvaluationByUserProjectEvaluationRole(Integer projectId, Integer userId, Integer evaluationRoleId);
-
+    Evaluations getEvaluationByUser(Integer projectId, Integer userId);
 
     ApiResponse<String> updateEvaluation(Evaluations evaluation);
 

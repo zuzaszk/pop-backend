@@ -4,17 +4,14 @@ import com.pop.backend.common.ApiResponse;
 import com.pop.backend.entity.Evaluations;
 import com.pop.backend.entity.Projects;
 import com.pop.backend.service.IEvaluationsService;
-import com.pop.backend.service.IProjectsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -37,12 +34,13 @@ public class EvaluationsController {
     @GetMapping("/assignedEvaluateList")
     @Operation(
             summary = "List all projects that assigned to supervisor/reviewer to evaluate",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<List<Projects>> getProjectsAssignedToUser(
-            @RequestParam("userId") Integer userId,
-            @RequestParam(value = "editionId", required = false) Integer editionId) {
+            @RequestParam Integer userId,
+            @RequestParam(required = false) Integer editionId) {
 
         List<Projects> projects = evaluationsService.getProjectsAssignedToUser(userId, editionId);
         return ResponseEntity.ok(projects);
@@ -52,9 +50,11 @@ public class EvaluationsController {
     @PostMapping("/add")
     @Operation(
             summary = "Supervisor/Reviewer add evaluation for a certain project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<String>> addEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation request: {}", evaluation);
 
@@ -77,9 +77,10 @@ public class EvaluationsController {
     @PutMapping("/update")
     @Operation(
             summary = "Update an existing evaluation for a certain project",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<String>> updateEvaluation(@RequestBody Evaluations evaluation) {
         logger.debug("Received evaluation update request: {}", evaluation);
 
@@ -102,24 +103,25 @@ public class EvaluationsController {
     @GetMapping("/getEvaluation")
     @Operation(
             summary = "Retrieve evaluation based on projectId, userId, and evaluationRoleId",
-            description = "Author: YL"
+            description = "Author: YL",
+            tags = {"Evaluations"}
     )
-    @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:5173"})
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
     public ResponseEntity<ApiResponse<Evaluations>> getEvaluationByUserRoleProject(
-            @RequestParam("projectId") Integer projectId,
-            @RequestParam("userId") Integer userId,
-            @RequestParam("evaluationRoleId") Integer evaluationRoleId) {
+            @RequestParam Integer projectId,
+            @RequestParam Integer userId) {
 
-        try {
-            Evaluations evaluation = evaluationsService.getEvaluationByUserProjectEvaluationRole(projectId, userId, evaluationRoleId);
-            if (evaluation != null) {
-                return ResponseEntity.ok(new ApiResponse<>(true, "Evaluation retrieved successfully.", evaluation));
-            } else {
-                return ResponseEntity.ok(new ApiResponse<>(false, "No score found for the given parameters.", null));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, "An error occurred while retrieving the score.", null));
-        }
+                try {
+                    Evaluations evaluation = evaluationsService.getEvaluationByUser(projectId, userId);
+                    if (evaluation != null) {
+                        return ResponseEntity.ok(new ApiResponse<>(true, "Evaluation retrieved successfully.", evaluation));
+                    } else {
+                        return ResponseEntity.ok(new ApiResponse<>(false, "No score found for the given parameters.", null));
+                    }
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new ApiResponse<>(false, "An error occurred while retrieving the score.", null));
+                }
     }
+
 }

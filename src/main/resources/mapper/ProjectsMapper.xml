@@ -95,6 +95,7 @@
     </select>
 
 
+
     <select id="getProjectsByUserRole" resultMap="ProjectBaseResultMap">
         SELECT p.project_id, p.title, p.acronym, p.overview, p.description, p.language, p.year, p.status, p.keywords, p.is_archived, p.created_at, p.is_complete, p.edition_id
         FROM projects p

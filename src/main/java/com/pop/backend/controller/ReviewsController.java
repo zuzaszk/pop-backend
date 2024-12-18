@@ -6,10 +6,11 @@ import com.pop.backend.service.IReviewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -29,7 +30,11 @@ public class ReviewsController {
     @PostMapping("/add")
     @Operation(
             summary = "Add a review",
-            description = "Author: YL")
+            description = "Author: YL",
+            tags = {"Reviews"}
+        )
+    @CrossOrigin(origins = {"https://269593.kieg.science/api", "https://269593.kieg.science"})
+    @PreAuthorize("hasAnyRole('ROLE_SUPERVISOR', 'ROLE_REVIEWER')")
     public ResponseEntity<ApiResponse<String>> addReview(@RequestBody Reviews review) {
         ApiResponse<String> response = reviewsService.addReview(review);
         if (response.isSuccess()) {
