@@ -4,6 +4,7 @@ import com.pop.backend.entity.Invitations;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IInvitationsService extends IService<Invitations> {
 
@@ -65,14 +66,19 @@ public interface IInvitationsService extends IService<Invitations> {
     Invitations findInvitationByInvitationLink(String invitationLink);
 
     /**
-     * Retrieves all invitations.
+     * Retrieves invitations based on user context.
      *
-     * This method lists all invitations in the system, regardless of their state.
-     * It is typically used for administrative purposes.
+     * This method retrieves invitations from the system. If the {@code isForCurrentUser} parameter is {@code true},
+     * it will return only the invitations associated with the specified {@code userId}. If {@code isForCurrentUser}
+     * is {@code false} or not provided, it will return all invitations, regardless of the user.
      *
-     * @return A list of all invitations.
+     * @param userId The ID of the user. Used to filter invitations when {@code isForCurrentUser} is {@code true}.
+     * @param isForCurrentUser If {@code true}, filters invitations to only show those for the specified user.
+     *                         If {@code false} or {@code null}, all invitations are returned.
+     * @return A list of invitations based on the provided parameters.
      */
-    List<Invitations> listAll();
+    List<Invitations> listAll(Integer userId, Boolean isForCurrentUser);
+
 
     /**
      * Updates an invitation with new details.

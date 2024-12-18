@@ -36,7 +36,7 @@ public class EmailService {
     public void sendEmailHTML(String toEmail, String subject, String message) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);  // true for multipart (HTML support)
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");  // true for multipart (HTML support)
 
             helper.setTo(toEmail);
             helper.setSubject(subject);

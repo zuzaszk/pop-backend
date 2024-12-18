@@ -9,7 +9,17 @@ import java.util.List;
 
 public interface InvitationsMapper extends BaseMapper<Invitations> {
 
-    @Select("SELECT * FROM invitations ORDER BY created_at DESC")
-    List<Invitations> getAllInvitations();
+    @Select({
+            "<script>",
+            "SELECT * FROM invitations",
+            "<where>",
+            "<if test='isForCurrentUser != null and isForCurrentUser == true'>",
+            "AND user_id = #{userId}",
+            "</if>",
+            "</where>",
+            "ORDER BY created_at DESC",
+            "</script>"
+    })
+    List<Invitations> getAllInvitations(@Param("userId") Integer userId, @Param("isForCurrentUser") Boolean isForCurrentUser);
 
 }
