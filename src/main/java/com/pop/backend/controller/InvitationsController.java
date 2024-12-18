@@ -30,7 +30,7 @@ public class InvitationsController {
         this.invitationsService = invitationsService;
     }
 
-//    Role name like "spectator", "student"
+//   Role name like "spectator", "student"
     @PostMapping("/send")
     public ResponseEntity<Invitations> sendInvitation(
             @RequestParam String email,

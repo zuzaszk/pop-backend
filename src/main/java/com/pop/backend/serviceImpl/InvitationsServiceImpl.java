@@ -129,8 +129,8 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
 
     @Override
     public String acceptInvitation(String token) {
-
         Claims claims = tokenService.validateToken(token);
+
         String email = claims.getSubject();
         String roleName = claims.get("role_name", String.class);
         Integer projectId = claims.get("project_id", Integer.class);
@@ -142,34 +142,42 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         }
 
         Invitations invitation = findInvitationByInvitationLink(backendUrl + "/invitation/accept?token=" + token);
-        Integer invitationId = invitation.getInvitationId();
-
-        if (invitation == null || invitation.getIsArchived() || isInvitationExpired(invitationId)) {
+        if (invitation == null || invitation.getIsArchived() || isInvitationExpired(invitation.getInvitationId())) {
             return null;
         }
 
         invitation.setState(1); // State: 1 = Accepted
         archiveInvitation(invitation);
 
-        Integer userId = user.map(u -> u.getUserId()).orElse(null);
+        processInvitationAcceptance(invitation, user, roleName, projectId);
+
+        return frontendUrl + ""; // TODO: link for invitation accepted
+    }
+
+    private void processInvitationAcceptance(Invitations invitation, Optional<Users> user, String roleName, Integer projectId) {
+        Integer userId = user.map(Users::getUserId).orElse(null);
         invitation.setUserId(userId);
+
         Integer roleId = getRoleIdByName(roleName);
         Projects project = projectsMapper.getProjectWithUsersAndEditionById(projectId);
         Integer editionId = project.getEditionId();
-        
-        UserRole userRole = new UserRole();
 
-        userRole.setUserId(userId);
-        userRole.setRoleId(roleId);
-        userRole.setProjectId(projectId);
-        userRole.setEditionId(editionId);
-
+        UserRole userRole = createUserRole(userId, roleId, projectId, editionId);
         userService.insertUserRole(userRole);
 
         Integer userRoleId = userRole.getUserRoleId();
         invitation.setUserRoleId(userRoleId);
         updateInvitation(invitation);
-        return frontendUrl + ""; // TODO: link for invitation accepted
+    }
+
+    private UserRole createUserRole(Integer userId, Integer roleId, Integer projectId, Integer editionId) {
+        UserRole userRole = new UserRole();
+        userRole.setUserId(userId);
+        userRole.setRoleId(roleId);
+        userRole.setProjectId(projectId);
+        userRole.setEditionId(editionId);
+
+        return userRole;
     }
 
     @Override
