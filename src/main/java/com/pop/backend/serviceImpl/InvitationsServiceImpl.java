@@ -77,7 +77,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
         invitation.setExpirationDate(LocalDateTime.now().plusDays(14)); // 14 days validity by default
         invitation.setIsArchived(false);
         String token = tokenService.generateInvitationToken(emailAddress, roleName, projectId);
-        String invitationLink = backendUrl + "/invitation/accept?token=" + token; // TODO: add /api
+        String invitationLink = backendUrl + "/invitation/accept?token=" + token;
         invitation.setInvitationLink(invitationLink);
         invitationMapper.insert(invitation);
         if (!userService.findByEmail(emailAddress).isPresent()) {
