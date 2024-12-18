@@ -3,6 +3,7 @@ package com.pop.backend.auth;
 import java.sql.Timestamp;
 import java.util.Optional;
 
+import com.pop.backend.service.IInvitationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,9 @@ public class AuthController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private IInvitationsService invitationsService;
 
     @Value("${frontend_url}")
     private String frontendUrl;

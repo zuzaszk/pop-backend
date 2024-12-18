@@ -11,8 +11,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-
-
 @Data
 @TableName("invitations")
 public class Invitations implements Serializable {
@@ -40,10 +38,4 @@ public class Invitations implements Serializable {
 
     private String emailAddress;
 
-
-    @TableField(exist = false)
-    private Users user;
-
-    @TableField(exist = false)
-    private UserRole userRole;
 }

@@ -60,8 +60,9 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/",
                     "/swagger-ui/**", "/v3/api-docs/**",
-                    "/auth/**", "/login", "/usos/**"
-                    ).permitAll()
+                    "/auth/**", "/login", "/usos/**",
+                        "/invitation/accept/**" // TODO: remove
+                ).permitAll()
                 .anyRequest().authenticated())
             .oauth2Login(oauth2 -> oauth2
                 .loginPage(frontendUrl + "/login")

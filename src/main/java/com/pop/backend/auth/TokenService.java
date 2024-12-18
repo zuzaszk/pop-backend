@@ -42,6 +42,17 @@ public class TokenService {
                 .compact();
     }
 
+    public String generateInvitationToken(String email, String roleName, Integer projectId) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("role_name", roleName)
+                .claim("project_id", projectId)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1209600000))  // 14 days
+                .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String generateTemporaryToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)

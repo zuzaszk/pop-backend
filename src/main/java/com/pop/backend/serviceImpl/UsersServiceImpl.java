@@ -165,7 +165,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Override
     public UserRole assignRoleToUser(Integer userId, Integer roleId, Integer editionId, Integer projectId) {
         UserRole userRole = new UserRole();
-        
+
         userRole.setUserId(userId);
         userRole.setRoleId(roleId);
         userRole.setEditionId(editionId);
@@ -181,5 +181,4 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         return Optional.ofNullable(usersMapper.findByUsosId(id).orElse(null));
     }
 
-    
 }
