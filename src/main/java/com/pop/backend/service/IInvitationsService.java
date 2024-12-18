@@ -52,4 +52,6 @@ public interface IInvitationsService extends IService<Invitations> {
     Invitations findInvitationByInvitationLink(String invitationLink);
 
     List<Invitations> listAll();
+
+    void updateInvitation(Invitations invitation);
 }
