@@ -1,17 +1,14 @@
 package com.pop.backend.controller;
 
+import com.pop.backend.auth.CustomUserDetails;
 import com.pop.backend.auth.TokenService;
 import com.pop.backend.entity.Invitations;
-import com.pop.backend.entity.Users;
-import com.pop.backend.service.EmailService;
 import com.pop.backend.service.IInvitationsService;
-import io.jsonwebtoken.Claims;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.net.URI;
 import java.util.List;
@@ -48,8 +45,11 @@ public class InvitationsController {
     }
 
     @GetMapping("/listAll")
-    public ResponseEntity<List<Invitations>> listAll() {
-        List<Invitations> invitations = invitationsService.listAll();
+    public ResponseEntity<List<Invitations>> listAll(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(value = "isForCurrentUser", defaultValue = "false") Boolean isForCurrentUser) {
+        Integer userId = userDetails.getUserId();
+        List<Invitations> invitations = invitationsService.listAll(userId, isForCurrentUser);
         return ResponseEntity.ok(invitations);
     }
 

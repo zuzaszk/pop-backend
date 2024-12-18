@@ -15,11 +15,8 @@ import com.pop.backend.service.IUsersService;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +90,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
 
         String subject = "Invitation to PoP";
         String htmlMessage = "<p>Welcome to PoP!</p>" +
-                "<p>You’ve been invited to register and join a project group in PoP!</p>" +
+                "<p>You've been invited to register and join a project group in PoP!</p>" +
                 "<p>Please follow these steps to join:</p>" +
                 "<ol>" +
                 "<li><b>First, register your account:</b></li>" +
@@ -108,7 +105,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
                 "<a href=\"" + invitationLink + "\" style=\"display: inline-block; " +
                 "padding: 10px 20px; font-size: 16px; background-color: #4CAF50; " +
                 "color: white; text-decoration: none; border-radius: 5px;\">Accept Invitation</a>" +
-                "<p>If any of the buttons don’t work, you can copy and paste these links into your browser:</p>" +
+                "<p>If any of the buttons don't work, you can copy and paste these links into your browser:</p>" +
                 "<p><b>Register:</b> <a href=\"" + registrationLink + "\">" + registrationLink + "</a></p>" +
                 "<p><b>Accept Invitation:</b> <a href=\"" + invitationLink + "\">" + invitationLink + "</a></p>";
         emailService.sendEmailHTML(emailAddress, subject, htmlMessage);
@@ -117,7 +114,7 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     public void sendInvitationMail(String emailAddress, String invitationLink) {
         String subject = "Invitation to Join a Project";
         String htmlMessage = "<p>You have been invited to join a project!</p>" +
-                "<p>You’ve been invited to join a project group in PoP! Please click the button below to accept the invitation:</p>" +
+                "<p>You've been invited to join a project group in PoP! Please click the button below to accept the invitation:</p>" +
                 "<a href=\"" + invitationLink + "\" style=\"display: inline-block; " +
                 "padding: 10px 20px; background-color: #4CAF50; color: white; " +
                 "text-decoration: none; border-radius: 5px;\">Accept Invitation</a>" +
@@ -201,8 +198,8 @@ public class InvitationsServiceImpl extends ServiceImpl<InvitationsMapper, Invit
     }
 
     @Override
-    public List<Invitations> listAll() {
-        return invitationMapper.getAllInvitations();
+    public List<Invitations> listAll(Integer userId, Boolean isForCurrentUser) {
+        return invitationMapper.getAllInvitations(userId, isForCurrentUser);
     }
 
     @Override
