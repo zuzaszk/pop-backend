@@ -26,6 +26,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // response.getWriter().write("{\"token\": \"" + token + "\"}");
 
         // Redirect to frontend with token in the URL
-        response.sendRedirect("http://localhost:5173/#/login-success?token=" + token);
+        response.sendRedirect("https://269593.kieg.science/#/login-success?token=" + token);
     }
 }

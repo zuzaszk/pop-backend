@@ -14,7 +14,6 @@ import java.util.List;
 
 @Data
 @TableName("projects")
-
 public class Projects implements Serializable {
 
     private static final long serialVersionUID = 1L;

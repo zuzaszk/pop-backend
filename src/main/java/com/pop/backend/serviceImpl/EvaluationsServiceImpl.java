@@ -127,8 +127,8 @@ public class EvaluationsServiceImpl extends ServiceImpl<EvaluationsMapper, Evalu
 
 
     @Override
-    public Evaluations getEvaluationByUserProjectEvaluationRole(Integer projectId, Integer userId, Integer evaluationRoleId) {
-        return evaluationsMapper.getEvaluationByUserProjectEvaluationRole(projectId, userId, evaluationRoleId);
+    public Evaluations getEvaluationByUser(Integer projectId, Integer userId) {
+        return evaluationsMapper.getEvaluationByUser(projectId, userId);
     }
 
 

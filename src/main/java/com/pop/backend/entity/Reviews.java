@@ -49,5 +49,8 @@ public class Reviews implements Serializable {
     @TableField(exist = false)
     private Users user;
 
+    @TableField(exist = false)
+    private String fullname;
+
 
 }

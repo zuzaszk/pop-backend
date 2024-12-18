@@ -49,7 +49,7 @@ public class AuthController {
     @Value("${frontend_url}")
     private String frontendUrl;
 
-    // @CrossOrigin(origins = {"http://localhost:5173", "http://localhost:8080"})
+    // @CrossOrigin(origins = {"https://269593.kieg.science", "https://269593.kieg.science/api"})
     @PostMapping("/register")
     @Operation(
             summary = "Register a new user",
@@ -68,8 +68,9 @@ public class AuthController {
             usersService.registerUser(newUser);
             usersService.assignRoleToUser(newUser.getUserId(), 5, null, null);
 
+            Users userWithRole = usersService.findByEmailWithRole(newUser.getEmail()).get();
 
-            String token = tokenService.generateToken(newUser, 5); // 5 (spectator) is the default role for new users
+            String token = tokenService.generateToken(userWithRole, 5); // 5 (spectator) is the default role for new users
 
             return ResponseEntity.ok(new AuthResponse("User registered successfully!", token));
         } catch (Exception e) {
