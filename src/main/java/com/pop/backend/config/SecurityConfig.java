@@ -48,6 +48,7 @@ public class SecurityConfig {
                     CorsConfiguration config = new CorsConfiguration();
                     config.addAllowedOrigin("https://269593.kieg.science"); // Frontend URL
                     config.addAllowedOrigin("http://localhost:5137"); // Frontend URL
+//                    config.addAllowedOrigin("*");
                     config.addAllowedMethod("*"); // Allow all HTTP methods
                     config.addAllowedHeader("*"); // Allow all headers
                     config.setAllowCredentials(true); // Allow cookies/auth tokens
